@@ -9,8 +9,8 @@ function MyFractal() {
 
   this.iterations = 200;
   this.bailout = 4;
-  this.zoom = 0.002;
-  this.offset_x = -1;
+  this.zoom = 0.0035;
+  this.offset_x = -0.6;
   this.offset_y = 0.0;
 
   this.initialize = function(elementId){
@@ -26,14 +26,15 @@ function MyFractal() {
     var d = this.imgData.data;
     var x;
     var y;
+    var curIndex;
     for(y = 0; y < this.height; y++){
       for(x = 0; x < this.width; x++){
-        var curIndex = (this.width * y + x)*4;
+        curIndex = (this.width * y + x)*4;
 
         var fColor = getFractalPointColor(
             ((x - this.width / 2) * this.zoom) + this.offset_x,
             ((y - this.height / 2) * this.zoom) + this.offset_y,
-            this.iterations, this.bailout);
+            this.iterations, this.bailout, this.getColor);
         d[curIndex++] = fColor[0];
         d[curIndex++] = fColor[1];
         d[curIndex++] = fColor[2];
@@ -46,6 +47,13 @@ function MyFractal() {
   this.updateImage = function() {
     this.ctx.putImageData(this.imgData, 0, 0);
     return this;
+  }
+
+  this.getColor = function(n) {
+    h = (n*10);
+    s = (n*-6);
+    l = (n*10);
+    return hslToRgb(h,s,l);
   }
 }
 
@@ -61,28 +69,30 @@ function startFractal() {
   console.log(myFractal.imgData);
 }
 
-function getFractalPointColor(x, y, iterations, bailout) {
+function getFractalPointColor(x, y, iterations, bailout, colorFunction) {
   ret = [];
-  zx = 0;
-  zy = 0;
-  cx = x;
-  cy = y;
+  zr = 0;
+  zi = 0;
+  cr = x;
+  ci = y;
 
   for (i = 0; i < iterations; i++) {
-    var x2 = zx * zx;
-    var y2 = zy * zy;
+    var zr2 = zr * zr;
+    var zi2 = zi * zi;
 
-    if (x2 + y2 > bailout) {
-        ret = [Math.round((i/5)*256), Math.round((i/10)*256), Math.round((i/15)*256), 255];
+    if (zr2 + zi2 > bailout) {
+        ret = colorFunction(i/iterations);
         return ret;
     }
 
-    zy = 2.0 * zx * zy + cy;
-    zx = (x2 - y2) + cx;
+    zi = 2 * zr * zi + ci;
+    zr = (zr2 - zi2) + cr;
+    //zi = zi < 0 ? -zi : zi;
+    //zr = zr < 0 ? -zr : zr;
   }
 
   if (i >= iterations) {
-    ret = [0,0,0, 255];
+    ret = [0,0,0];
   }
   return ret;
 }
