@@ -1,56 +1,78 @@
-var WIDTH = 800;
-var HEIGHT = 600;
-var ITERATIONS = 200;
-var BAILOUT = 2.0;
 
-var ZOOM = 0.002;
+function MyFractal() {
+  this.canvas = null;
+  this.ctx = null;
+  this.imgData;
 
-var OFFSET_X = -1;
-var OFFSET_Y = 0.0;
+  this.width = 800;
+  this.height = 600;
 
+  this.iterations = 200;
+  this.bailout = 4;
+  this.zoom = 0.002;
+  this.offset_x = -1;
+  this.offset_y = 0.0;
 
-function startFractal() {
-  var canvas = document.getElementById("canvasFractal");
-  var ctx = canvas.getContext("2d");
-  var imgData = ctx.createImageData(WIDTH, HEIGHT);
+  this.initialize = function(elementId){
+    this.canvas = document.getElementById(elementId);
+    this.ctx = this.canvas.getContext("2d");
 
-  drawImageData(imgData.data)
+    this.imgData = this.ctx.createImageData(this.width, this.height);
+    console.log(this.imgData.data);
+    return this;
+  }
 
-  ctx.putImageData(imgData, 0, 0);
+  this.updateImageData = function() {
+    var d = this.imgData.data;
+    var x;
+    var y;
+    for(y = 0; y < this.height; y++){
+      for(x = 0; x < this.width; x++){
+        var curIndex = (this.width * y + x)*4;
 
-  console.log(imgData);
-}
-
-function drawImageData(d) {
-  var x;
-  var y;
-  for(y = 0; y < HEIGHT; y++){
-    for(x = 0; x < WIDTH; x++){
-      var curIndex = (WIDTH * y + x)*4;
-
-      var fColor = getFractalPointColor(
-          ((x - WIDTH / 2) * ZOOM) + OFFSET_X,
-          ((y - HEIGHT / 2) * ZOOM) + OFFSET_Y);
-      d[curIndex++] = fColor[0];
-      d[curIndex++] = fColor[1];
-      d[curIndex++] = fColor[2];
-      d[curIndex++] = 256;
+        var fColor = getFractalPointColor(
+            ((x - this.width / 2) * this.zoom) + this.offset_x,
+            ((y - this.height / 2) * this.zoom) + this.offset_y,
+            this.iterations, this.bailout);
+        d[curIndex++] = fColor[0];
+        d[curIndex++] = fColor[1];
+        d[curIndex++] = fColor[2];
+        d[curIndex++] = 256;
+      }
     }
+    return this;
+  }
+
+  this.updateImage = function() {
+    this.ctx.putImageData(this.imgData, 0, 0);
+    return this;
   }
 }
 
-function getFractalPointColor(x, y) {
+function startFractal() {
+  window.myFractal = new MyFractal();
+
+  myFractal
+    .initialize("canvasFractal")
+    .updateImageData()
+    .updateImage();
+
+  setupKeyHandler();
+  console.log(myFractal.imgData);
+}
+
+function getFractalPointColor(x, y, iterations, bailout) {
   ret = [];
   zx = 0;
   zy = 0;
   cx = x;
   cy = y;
 
-  for (i = 0; i < ITERATIONS; i++) {
+  for (i = 0; i < iterations; i++) {
     var x2 = zx * zx;
     var y2 = zy * zy;
 
-    if (x2 + y2 > BAILOUT * BAILOUT) {
+    if (x2 + y2 > bailout) {
         ret = [Math.round((i/5)*256), Math.round((i/10)*256), Math.round((i/15)*256), 255];
         return ret;
     }
@@ -59,7 +81,7 @@ function getFractalPointColor(x, y) {
     zx = (x2 - y2) + cx;
   }
 
-  if (i >= ITERATIONS) {
+  if (i >= iterations) {
     ret = [0,0,0, 255];
   }
   return ret;
