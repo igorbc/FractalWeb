@@ -11,6 +11,7 @@ MyShaders = {
     uniform int iterations;
 
     int getIterationLimit(int iterations, float time) {
+      return iterations;
       return int(float(iterations)/2.0 + (float(iterations)/2.0) * sin(time/10.0));
     }
 

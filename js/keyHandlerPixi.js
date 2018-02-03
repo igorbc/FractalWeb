@@ -111,31 +111,33 @@ function handleKeysPixi(e){
   if (e.keyCode == keys.key_up_arrow) {
     // up arrow
     console.log("up");
-    myFractalPixi.incrementOffsetY();
+    myFractal.incrementOffsetY();
   }
   else if (e.keyCode == keys.key_down_arrow) {
     // down arrow
     console.log("down");
-    myFractalPixi.decrementOffsetY();
+    myFractal.decrementOffsetY();
   }
   else if (e.keyCode == keys.key_left_arrow) {
     // left arrow
     console.log("left");
-    myFractalPixi.decrementOffsetX();
+    myFractal.decrementOffsetX();
   }
   else if (e.keyCode == keys.key_right_arrow) {
     // right arrow
     console.log("right");
-    myFractalPixi.incrementOffsetX();
+    myFractal.incrementOffsetX();
   }
   else if (e.keyCode == keys.key_x) {
     // x
-    myFractalPixi.zoom += 0.0001;
-    console.log("x");
+    myFractal.zoomIn();
+    console.log(myFractal.uniforms.scale.value.x);
+    console.log("x zoom in");
   }
   else if (e.keyCode == keys.key_z) {
     // z
-    myFractalPixi.decrementScale();
-    console.log("z");
+    myFractal.zoomOut();
+    console.log(myFractal.uniforms.scale.value.x);
+    console.log("z zoom out");
   }
 }
