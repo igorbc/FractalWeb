@@ -1,4 +1,3 @@
-
 function MyFractal() {
   this.canvas = null;
   this.ctx = null;
@@ -38,7 +37,7 @@ function MyFractal() {
         d[curIndex++] = fColor[0];
         d[curIndex++] = fColor[1];
         d[curIndex++] = fColor[2];
-        d[curIndex++] = 256;
+        d[curIndex++] = 255;
       }
     }
     return this;
@@ -50,9 +49,9 @@ function MyFractal() {
   }
 
   this.getColor = function(n) {
-    h = (n*10);
-    s = (n*-6);
-    l = (n*10);
+    h = (n*10) % 1;
+    s = (n*-6) % 1;
+    l = (n*10) % 1;
     return hslToRgb(h,s,l);
   }
 }

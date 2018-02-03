@@ -6,9 +6,15 @@ window.Scale = function(){
     if(typeof n === "undefined") return;
     if((typeof domain === "undefined") || (typeof range === "undefined")) throw "Before using set domain and range";
 
+    if(range.length > 2) {
+      for(var i = 0; i < range.length - 1; i++){
+
+      }
+    }
+
     var diffDomain = domain[1] - domain[0];
     var diffRange = range[1] - range[0];
-    return range[0] + ((n - domain[0])/diffDomain) * diffRange
+    return range[0] + ((n - domain[0])/diffDomain) * diffRange;
   }
 
   scale.domain = function(d){

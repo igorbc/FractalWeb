@@ -100,62 +100,42 @@ var keys = {
   key_single_quote: 222,
 }
 
-function setupKeyHandler(){
-  document.onkeydown = handleKeys;
+function setupKeyHandlerPixi(){
+  document.onkeydown = handleKeysPixi;
 }
 
-function handleKeys(e){
+function handleKeysPixi(e){
   console.log("key pressed");
   e = e || window.event;
 
   if (e.keyCode == keys.key_up_arrow) {
     // up arrow
     console.log("up");
-    myFractal.iterations++;
-    // myFractal.offset_y -= 0.1;
-    myFractal
-      .updateImageData()
-      .updateImage();
+    myFractalPixi.incrementOffsetY();
   }
   else if (e.keyCode == keys.key_down_arrow) {
     // down arrow
     console.log("down");
-    myFractal.iterations--;
-    // myFractal.offset_y += 0.1;
-    myFractal
-      .updateImageData()
-      .updateImage();
+    myFractalPixi.decrementOffsetY();
   }
   else if (e.keyCode == keys.key_left_arrow) {
     // left arrow
     console.log("left");
-    myFractal.offset_x -= 0.1;
-    myFractal
-      .updateImageData()
-      .updateImage();
+    myFractalPixi.decrementOffsetX();
   }
   else if (e.keyCode == keys.key_right_arrow) {
     // right arrow
     console.log("right");
-    myFractal.offset_x += 0.1;
-    myFractal
-      .updateImageData()
-      .updateImage();
+    myFractalPixi.incrementOffsetX();
   }
   else if (e.keyCode == keys.key_x) {
     // x
-    myFractal.zoom += 0.0001;
-    myFractal
-      .updateImageData()
-      .updateImage();
+    myFractalPixi.zoom += 0.0001;
     console.log("x");
   }
   else if (e.keyCode == keys.key_z) {
     // z
-    myFractal.zoom -= 0.0001;
-    myFractal
-      .updateImageData()
-      .updateImage();
+    myFractalPixi.decrementScale();
     console.log("z");
   }
 }
