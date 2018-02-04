@@ -38,10 +38,10 @@ function MyFractalPixi(){
   }
 
   this.initialize = function(containderId){
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.dimension.x = window.innerWidth;
+    this.dimension.y = window.innerHeight;
     // Chooses either WebGL if supported or falls back to Canvas rendering
-    this.renderer = new PIXI.autoDetectRenderer(this.width, this.height);
+    this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y);
     // Add the render view object into the page
     this.renderer.view.setAttribute('id','fractalPixi')
 
@@ -52,11 +52,11 @@ function MyFractalPixi(){
 
     // Load an image and create an object
     this.image = new PIXI.Sprite();
-    this.image.width = this.width;
-    this.image.height = this.height;
+    this.image.width = this.dimension.x;
+    this.image.height = this.dimension.y;
     // Set it at the center of the screen
-    this.image.x = this.width / 2;
-    this.image.y = this.height / 2;
+    this.image.x = this.dimension.x / 2;
+    this.image.y = this.dimension.y / 2;
     // Make sure the center point of the image is at its center, instead of the default top left
     this.image.anchor.set(0.5);
     // Add it to the screen
