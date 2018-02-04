@@ -4,8 +4,8 @@ function MyFractalPixi(){
   this.dimension = { x: 1000, y: 1000 };
   this.iterations = 200;
   this.uniforms = {};
-  this.standardOffset = 0.01;
-  this.standardZoom = 0.02;
+  this.standardOffset = 0.015;
+  this.standardZoom = 0.025;
 
   this.incrementOffsetX = function(v = this.standardOffset) {
     this.offset.x += v * this.scale.x;
@@ -13,7 +13,7 @@ function MyFractalPixi(){
   };
 
   this.incrementOffsetY = function(v = this.standardOffset) {
-    this.offset.y += v * this.scale.y;
+    this.offset.y -= v * this.scale.y;
     this.updateUniforms();
   };
 
@@ -23,7 +23,7 @@ function MyFractalPixi(){
   };
 
   this.decrementOffsetY = function(v = this.standardOffset) {
-    this.offset.y -= v * this.scale.y;
+    this.offset.y += v * this.scale.y;
     this.updateUniforms();
   };
 

@@ -43,18 +43,18 @@ MyShaders = {
     }
 
     vec4 getColor(float i, float maxI) {
-      float h = i / (maxI/4.0);
-      float s = i / (20.0);
-      float b = i / (maxI/5.0);
-
-      return vec4(hsb2rgb(vec3(h,s,b)),1.0);
+      float v = i/maxI;
+      const vec3 RED = vec3(1.0, 0.0, 0.0);
+      const vec3 YELLOW = vec3(1.0, 1.0, 0.0);
+      const vec3 DARK_COLOR = vec3(0.0, 0.15, 0.1);
+      return vec4(mix(DARK_COLOR, mix(RED, YELLOW, v), v * 5.0), 1.0);
     }
 
     void main() {
       const float BAILOUT = 8.0;
       vec2 z = vec2(0.0, 0.0);
       vec2 c = vec2((gl_FragCoord.x / dimension.y - 1.0) * scale.x + offset.x,
-                    (gl_FragCoord.y / dimension.y - 0.5) * scale.y + offset.y);
+                   -(gl_FragCoord.y / dimension.y - 0.5) * scale.y + offset.y);
       int iterationLimit;
       int count;
       for(int i = 0; i < 1000; i++){
@@ -64,16 +64,14 @@ MyShaders = {
           break;
         }
 
-        vec2 z2 = vec2(z.x * z.x, z.y * z.y);
+        vec2 z2 = z * z;
 
         if (z2.x + z2.y > BAILOUT) {
-          // float v = float(i)/float(iterationLimit);
           gl_FragColor = getColor(float(i), float(iterationLimit));
           break;
         }
 
-        z.y = 2.0 * z.x * z.y + c.y;
-        z.x = (z2.x - z2.y) + c.x;
+        z = vec2(z2.x - z2.y, 2.0 * z.x * z.y) + c;
         count = i;
       }
       iterationLimit = getIterationLimit(iterations, time);
