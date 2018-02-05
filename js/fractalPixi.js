@@ -6,6 +6,14 @@ function MyFractalPixi(){
   this.uniforms = {};
   this.standardOffset = 0.015;
   this.standardZoom = 0.025;
+  this.mousePosition = {};
+  this.isJulia = false;
+  this.burningShip = false;
+
+  this.toggleJulia = function() {
+    this.isJulia = !this.isJulia;
+    this.updateUniforms();
+  };
 
   this.incrementOffsetX = function(v = this.standardOffset) {
     this.offset.x += v * this.scale.x;
@@ -45,7 +53,13 @@ function MyFractalPixi(){
     // Add the render view object into the page
     this.renderer.view.setAttribute('id','fractalPixi')
 
-    document.getElementById(containderId).appendChild(this.renderer.view);
+    this.container = document.getElementById(containderId);
+    this.container.appendChild(this.renderer.view);
+    this.container.onmousemove = (function(e) {
+      this.fractal.mousePosition.x = e.pageX - this.element.offsetLeft;
+      this.fractal.mousePosition.y = e.pageY - this.element.offsetTop;
+      this.fractal.updateUniforms();
+    }).bind({fractal: this, element: this.container})
 
     // The stage is the root container that will hold everything in our scene
     this.stage = new PIXI.Container();
@@ -75,10 +89,14 @@ function MyFractalPixi(){
   }
 
   this.updateUniforms = function() {
-    this.uniforms.iterations = { type:"i", value: this.iterations }
-    this.uniforms.dimension = { type:"v2", value: this.dimension }
-    this.uniforms.scale = { type:"v2", value: this.scale }
-    this.uniforms.offset = { type:"v2", value: this.offset }
+    // this.uniforms.isJulia = { type:"b", value: this.isJulia };
+    this.uniforms.isJulia = {type:"b", value: this.isJulia };
+    this.uniforms.burningShip = { type:"b", value: this.burningShip };
+    this.uniforms.iterations = { type:"i", value: this.iterations };
+    this.uniforms.dimension = { type:"v2", value: this.dimension };
+    this.uniforms.scale = { type:"v2", value: this.scale };
+    this.uniforms.offset = { type:"v2", value: this.offset };
+    this.uniforms.mousePosition = { type:"v2", value: this.mousePosition };
   }
 
   this.animate = (function () {

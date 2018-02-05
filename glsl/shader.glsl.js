@@ -9,12 +9,14 @@ MyShaders = {
     uniform vec2 scale;
     uniform vec2 offset;
     uniform int iterations;
+    uniform vec2 mousePosition;
+    uniform bool isJulia;
+    uniform bool burningShip;
 
     int getIterationLimit(int iterations, float time) {
       // return iterations;
-      return int(float(iterations)/2.0 + (float(iterations)/2.0) * sin(time/10.0));
+      return 1 + int(float(iterations)/2.0 + (float(iterations)/2.0) * sin(time/10.0));
     }
-
 
     vec3 rgb2hsb( in vec3 c ){
         vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -52,9 +54,20 @@ MyShaders = {
 
     void main() {
       const float BAILOUT = 8.0;
-      vec2 z = vec2(0.0, 0.0);
-      vec2 c = vec2((gl_FragCoord.x / dimension.y - 1.0) * scale.x + offset.x,
-                   -(gl_FragCoord.y / dimension.y - 0.5) * scale.y + offset.y);
+      vec2 z;
+      vec2 c;
+      if (isJulia) {
+        c = vec2((mousePosition.x / dimension.y - 1.0) * scale.x + offset.x,
+                -(mousePosition.y / dimension.y - 0.5) * scale.y + offset.y);
+        z = vec2((gl_FragCoord.x / dimension.y - 1.0) * scale.x + offset.x,
+                -(gl_FragCoord.y / dimension.y - 0.5) * scale.y + offset.y);
+      }
+      else {
+        z = vec2(0.0, 0.0);
+        c = vec2((gl_FragCoord.x / dimension.y - 1.0) * scale.x + offset.x,
+                -(gl_FragCoord.y / dimension.y - 0.5) * scale.y + offset.y);
+      }
+
       int iterationLimit;
       int count;
       for(int i = 0; i < 1000; i++){
@@ -71,7 +84,10 @@ MyShaders = {
           break;
         }
 
-        z = vec2(z2.x - z2.y, 2.0 * z.x * z.y) + c;
+        if (burningShip)
+          z = vec2(z2.x - z2.y, abs(2.0 * z.x * z.y)) + c;
+        else
+          z = vec2(z2.x - z2.y, 2.0 * z.x * z.y) + c;
         count = i;
       }
       iterationLimit = getIterationLimit(iterations, time);

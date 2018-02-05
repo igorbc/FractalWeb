@@ -140,4 +140,10 @@ function handleKeysPixi(e){
     console.log(myFractal.uniforms.scale.value.x);
     console.log("z zoom out");
   }
+  else if (e.keyCode == keys.key_j) {
+    // j
+    myFractal.toggleJulia();
+    console.log(myFractal.uniforms.isJulia);
+    console.log("toggle julia set");
+  }
 }
