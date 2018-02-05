@@ -9,9 +9,20 @@ function MyFractalPixi(){
   this.mousePosition = {};
   this.isJulia = false;
   this.burningShip = false;
+  this.oscillate = true;
+
+  this.toggleOscillate = function() {
+    this.oscillate = !this.oscillate;
+    this.updateUniforms();
+  };
 
   this.toggleJulia = function() {
     this.isJulia = !this.isJulia;
+    this.updateUniforms();
+  };
+
+  this.toggleBurningShip = function() {
+    this.burningShip = !this.burningShip;
     this.updateUniforms();
   };
 
@@ -77,7 +88,10 @@ function MyFractalPixi(){
     this.stage.addChild(this.image);
 
 
-    this.uniforms.time = { type:"f", value: 0}
+    this.uniforms.time = { type:"f", value: 0};
+    this.uniforms.isJulia = {type:"b", value: this.isJulia };
+    this.uniforms.burningShip = { type:"b", value: this.burningShip };
+    this.uniforms.oscillate = { type:"b", value: this.oscillate };
     this.updateUniforms();
     //Get shader code as a string
     var shaderCode = MyShaders.fractalShader;
@@ -90,8 +104,9 @@ function MyFractalPixi(){
 
   this.updateUniforms = function() {
     // this.uniforms.isJulia = { type:"b", value: this.isJulia };
-    this.uniforms.isJulia = {type:"b", value: this.isJulia };
-    this.uniforms.burningShip = { type:"b", value: this.burningShip };
+    this.uniforms.isJulia.value = this.isJulia;
+    this.uniforms.burningShip.value = this.burningShip;
+    this.uniforms.oscillate.value = this.oscillate;
     this.uniforms.iterations = { type:"i", value: this.iterations };
     this.uniforms.dimension = { type:"v2", value: this.dimension };
     this.uniforms.scale = { type:"v2", value: this.scale };
@@ -101,6 +116,7 @@ function MyFractalPixi(){
 
   this.animate = (function () {
     this.uniforms.time.value += 0.1;
+    this.updateUniforms();
     // start the timer for the next animation loop
     requestAnimationFrame(this.animate);
     // this is the main render call that makes pixi draw your container and its children.

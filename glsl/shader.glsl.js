@@ -4,18 +4,21 @@ MyShaders = {
     precision highp float;
     precision highp int;
 
+    uniform bool isJulia;
+    uniform bool burningShip;
+    uniform bool oscillate;
     uniform float time; //Declare that we're using this uniform
     uniform vec2 dimension;
     uniform vec2 scale;
     uniform vec2 offset;
     uniform int iterations;
     uniform vec2 mousePosition;
-    uniform bool isJulia;
-    uniform bool burningShip;
 
-    int getIterationLimit(int iterations, float time) {
-      // return iterations;
-      return 1 + int(float(iterations)/2.0 + (float(iterations)/2.0) * sin(time/10.0));
+    int getIterationLimit(in int iterations, in float time) {
+      if (oscillate)
+        return 1 + int(float(iterations)/2.0 + (float(iterations)/2.0) * sin(time/10.0));
+      else
+        return iterations;
     }
 
     vec3 rgb2hsb( in vec3 c ){
@@ -44,7 +47,7 @@ MyShaders = {
         return c.z * mix(vec3(1.0), rgb, c.y);
     }
 
-    vec4 getColor(float i, float maxI) {
+    vec4 getColor(in float i, in float maxI) {
       float v = i/maxI;
       const vec3 RED = vec3(1.0, 0.0, 0.0);
       const vec3 YELLOW = vec3(1.0, 1.0, 0.0);

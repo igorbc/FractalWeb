@@ -131,19 +131,31 @@ function handleKeysPixi(e){
   else if (e.keyCode == keys.key_x) {
     // x
     myFractal.zoomIn();
-    console.log(myFractal.uniforms.scale.value.x);
     console.log("x zoom in");
+    console.log(myFractal.uniforms.scale.value.x);
   }
   else if (e.keyCode == keys.key_z) {
     // z
     myFractal.zoomOut();
-    console.log(myFractal.uniforms.scale.value.x);
     console.log("z zoom out");
+    console.log(myFractal.uniforms.scale.value.x);
   }
   else if (e.keyCode == keys.key_j) {
     // j
     myFractal.toggleJulia();
-    console.log(myFractal.uniforms.isJulia);
     console.log("toggle julia set");
+    console.log(myFractal.uniforms.isJulia.value);
+  }
+  else if (e.keyCode == keys.key_b) {
+    // b
+    myFractal.toggleBurningShip();
+    console.log("toggle burning ship");
+    console.log(myFractal.uniforms.burningShip.value);
+  }
+  else if (e.keyCode == keys.key_o) {
+    // o
+    myFractal.toggleOscillate();
+    console.log("toggle oscillate");
+    console.log(myFractal.uniforms.oscillate.value);
   }
 }
