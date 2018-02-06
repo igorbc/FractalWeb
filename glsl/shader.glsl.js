@@ -16,7 +16,7 @@ MyShaders = {
 
     int getIterationLimit(in int iterations, in float time) {
       if (oscillate)
-        return 1 + int(float(iterations)/2.0 + (float(iterations)/2.0) * sin(time/10.0));
+        return 1 + int(float(iterations)/2.0 + (float(iterations)/2.0) * sin(time/3.0));
       else
         return iterations;
     }
