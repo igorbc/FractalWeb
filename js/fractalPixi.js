@@ -79,7 +79,36 @@ function MyFractalPixi(){
       this.fractal.mousePosition.x = e.pageX - this.element.offsetLeft;
       this.fractal.mousePosition.y = e.pageY - this.element.offsetTop;
       this.fractal.updateUniforms();
-    }).bind({fractal: this, element: this.container})
+    }).bind({fractal: this, element: this.container});
+
+    this.container.ontouchstart = (function(e) {
+      if(e.touches.length == 1){ // Only deal with one finger
+        var touch = e.touches[0]; // Get the information for finger #1
+        // var node = touch.target; // Find the node the drag started from
+        this.fractal.previousTouch = {
+          x: touch.pageX,
+          y: touch.pageY
+        };
+        console.log(this.fractal.touchStart);
+      }
+    }).bind({fractal: this, element: this.container});
+
+    this.container.ontouchmove = (function(e){
+      if(e.touches.length == 1){ // Only deal with one finger
+        var touch = e.touches[0]; // Get the information for finger #1
+        // var node = touch.target; // Find the node the drag started from
+        diff = {
+          x: this.fractal.previousTouch.x - touch.pageX,
+          y: this.fractal.previousTouch.y - touch.pageY
+        }
+        this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale.x;
+        this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale.x;
+        this.fractal.previousTouch = {
+          x: touch.pageX,
+          y: touch.pageY
+        };
+      }
+    }).bind({fractal: this, element: this.container});
 
     // The stage is the root container that will hold everything in our scene
     this.stage = new PIXI.Container();
