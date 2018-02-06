@@ -158,4 +158,9 @@ function handleKeysPixi(e){
     console.log("toggle oscillate");
     console.log(myFractal.uniforms.oscillate.value);
   }
+  else if (e.keyCode == keys.key_p) {
+    // p
+    myFractal.togglePause();
+    console.log("toggle pause");
+  }
 }

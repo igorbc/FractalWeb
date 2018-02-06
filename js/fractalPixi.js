@@ -1,7 +1,7 @@
 function MyFractalPixi(){
-  this.offset = {x: 0.0, y: 0.0 };
-  this.scale = { x: 3.5, y: 3.5 };
-  this.dimension = { x: 1000, y: 1000 };
+  this.offset = {x: -1, y: 0 };
+  this.scale = { x: 0.2, y: 0.2 };
+  this.dimension = { x: 0, y: 0 };
   this.iterations = 200;
   this.uniforms = {};
   this.standardOffset = 0.015;
@@ -10,6 +10,12 @@ function MyFractalPixi(){
   this.isJulia = false;
   this.burningShip = false;
   this.oscillate = true;
+  this.pause = false;
+
+  this.togglePause = function() {
+    this.pause = !this.pause;
+    this.updateUniforms();
+  };
 
   this.toggleOscillate = function() {
     this.oscillate = !this.oscillate;
@@ -47,26 +53,29 @@ function MyFractalPixi(){
   };
 
   this.zoomIn = function(v = this.standardZoom) {
-    this.scale.x *= 1-v;
-    this.scale.y *= 1-v;
-  }
-
-  this.zoomOut = function(v = this.standardZoom) {
     this.scale.x *= 1+v;
     this.scale.y *= 1+v;
   }
 
+  this.zoomOut = function(v = this.standardZoom) {
+    this.scale.x *= 1-v;
+    this.scale.y *= 1-v;
+  }
+
   this.initialize = function(containderId){
-    this.dimension.x = window.innerWidth;
-    this.dimension.y = window.innerHeight;
+    this.container = document.getElementById(containderId);
+    console.log(this.container);
+    this.dimension.x = this.container.clientWidth;
+    this.dimension.y = this.container.clientHeight;
+    console.log(this.dimension);
     // Chooses either WebGL if supported or falls back to Canvas rendering
     this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y);
     // Add the render view object into the page
     this.renderer.view.setAttribute('id','fractalPixi')
 
-    this.container = document.getElementById(containderId);
     this.container.appendChild(this.renderer.view);
     this.container.onmousemove = (function(e) {
+      if (this.fractal.pause) return;
       this.fractal.mousePosition.x = e.pageX - this.element.offsetLeft;
       this.fractal.mousePosition.y = e.pageY - this.element.offsetTop;
       this.fractal.updateUniforms();
