@@ -64,10 +64,8 @@ function MyFractalPixi(){
 
   this.initialize = function(containderId){
     this.container = document.getElementById(containderId);
-    console.log(this.container);
     this.dimension.x = this.container.clientWidth;
     this.dimension.y = this.container.clientHeight;
-    console.log(this.dimension);
     // Chooses either WebGL if supported or falls back to Canvas rendering
     this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y);
     // Add the render view object into the page
@@ -89,7 +87,6 @@ function MyFractalPixi(){
           x: touch.pageX,
           y: touch.pageY
         };
-        console.log(this.fractal.touchStart);
       }
     }).bind({fractal: this, element: this.container});
 
@@ -109,6 +106,19 @@ function MyFractalPixi(){
         };
       }
     }).bind({fractal: this, element: this.container});
+
+    this.container.ongesturechange = (function(e){
+      this.fractal.scale.x += (this.fractal.scale.x * e.scale);
+      this.fractal.scale.y += (this.fractal.scale.y * e.scale);
+      console.log("scale " + e.scale);
+    }).bind({fractal: this, element: this.container});
+
+    // this.container.ongestureend = function(e){
+    //   Update the values for the next time a gesture happens
+    //   width *= e.scale;
+    //   height *= e.scale;
+    //   rotation = (rotation + e.rotation) % 360;
+    // }
 
     // The stage is the root container that will hold everything in our scene
     this.stage = new PIXI.Container();
