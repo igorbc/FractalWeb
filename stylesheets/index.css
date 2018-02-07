@@ -12,6 +12,19 @@ body
   height: 100%; */
 }
 
+#top-button {
+  width: 100%;
+  height: 10%;
+  color: #fff;
+  /* background-color: #fff; */
+  position: fixed;
+  text-align: left;
+  padding-left: 10px;
+  padding-top: 10px;
+  font-family: verdana, sans-serif;
+  font-size: 35px;
+}
+
 #debug-info {
   width: 100%;
   height: 10%;

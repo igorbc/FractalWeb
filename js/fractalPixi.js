@@ -1,7 +1,9 @@
+var mouseDown = false;
 function MyFractalPixi(){
   this.offset = {x: -1, y: 0 };
   this.scale = { x: 0.2, y: 0.2 };
   this.dimension = { x: 0, y: 0 };
+  this.focusPoint = { x: 0.5, y: 0.5 };
   this.iterations = 100;
   this.uniforms = {};
   this.standardOffset = 0.008;
@@ -70,11 +72,19 @@ function MyFractalPixi(){
     this.renderer.view.setAttribute('id','fractalPixi')
 
     this.container.appendChild(this.renderer.view);
+
+    this.container.onmousedown = function(e) { mouseDown = true; }
+    this.container.onmouseup = function(e) { mouseDown = false; }
     this.container.onmousemove = (function(e) {
-      if (this.fractal.pause) return;
+      if(this.fractal.pause) return;
       this.fractal.mousePosition.x = e.pageX - this.element.offsetLeft;
       this.fractal.mousePosition.y = e.pageY - this.element.offsetTop;
       this.fractal.updateUniforms();
+
+      if (!this.fractal.pause && !mouseDown){
+        this.fractal.focusPoint.x = this.fractal.mousePosition.x;
+        this.fractal.focusPoint.y = this.fractal.mousePosition.y;
+      }
     }).bind({fractal: this, element: this.container});
 
     this.container.ontouchstart = (function(e) {
@@ -96,7 +106,7 @@ function MyFractalPixi(){
 
     this.container.ontouchmove = (function(e) {
       e.preventDefault();
-      if(e.touches.length == 1){ // Only deal with one finger
+      if(e.touches.length == 1) {
         var touch = e.touches[0]; // Get the information for finger #1
         // var node = touch.target; // Find the node the drag started from
         diff = {
@@ -121,6 +131,14 @@ function MyFractalPixi(){
     this.container.ontouchend = (function(e) {
       log("touch end!");
     }).bind({fractal: this, element: this.container});
+
+    var topButton = document.getElementById("top-button");
+    topButton.onclick = (function() {
+      this.toggleBurningShip()
+    }).bind(this);
+    topButton.onctouch = (function() {
+      this.toggleBurningShip()
+    }).bind(this);
 
     // The stage is the root container that will hold everything in our scene
     this.stage = new PIXI.Container();
@@ -212,6 +230,7 @@ function MyFractalPixi(){
     this.uniforms.scale = { type:"v2", value: this.scale };
     this.uniforms.offset = { type:"v2", value: this.offset };
     this.uniforms.mousePosition = { type:"v2", value: this.mousePosition };
+    this.uniforms.focusPoint = { type:"v2", value: this.focusPoint };
   }
 
   this.animate = (function () {

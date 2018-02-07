@@ -13,6 +13,7 @@ MyShaders = {
     uniform vec2 offset;
     uniform int iterations;
     uniform vec2 mousePosition;
+    uniform vec2 focusPoint;
 
     int getIterationLimit(in int iterations, in float time) {
       if (oscillate)
@@ -62,7 +63,6 @@ MyShaders = {
       vec2 adjustedPos = vec2(((gl_FragCoord.x - dimension.x/2.0) / max(dimension.y, dimension.x)),
                              -((gl_FragCoord.y - dimension.y/2.0) / max(dimension.y, dimension.x)));
       if (isJulia) {
-        // asdfasdf
         vec2 adjusedCursorPos = vec2(((mousePosition.x - dimension.x/2.0) / max(dimension.y, dimension.x)),
                                     -((mousePosition.y - dimension.y/2.0) / max(dimension.y, dimension.x)));
         c = vec2(adjusedCursorPos.x / scale.x + offset.x,
