@@ -12,6 +12,18 @@ body
   height: 100%; */
 }
 
+#debug-info {
+  width: 100%;
+  height: 10%;
+  color: #fff;
+  position: fixed;
+  text-align: left;
+  padding-left: 10px;
+  padding-top: 10px;
+  font-family: verdana, sans-serif;
+  font-size: 35px;
+}
+
 #fractalContainer {
   width: 100%;
   height: 100%;
