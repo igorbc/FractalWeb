@@ -152,17 +152,35 @@ function MyFractalPixi() {
     var topButton = document.getElementById("top-button");
     topButton.onclick = (function() {
       this.toggleJulia();
+      if(this.isJulia)
+        topButton.innerHTML = "Turn off interactive Julia Fractal";
+       else
+        topButton.innerHTML = "Turn on interactive Julia Fractal";
     }).bind(this);
+
     topButton.onctouch = (function() {
       this.toggleJulia();
+      if(this.isJulia)
+        topButton.innerHTML = "Turn off interactive Julia Fractal";
+       else
+        topButton.innerHTML = "Turn on interactive Julia Fractal";
     }).bind(this);
 
     var bottomButton = document.getElementById("bottom-button");
     bottomButton.onclick = (function() {
       this.toggleBurningShip();
+      if(this.burningShip)
+        bottomButton.innerHTML = "Turn off Burning Ship Fractal";
+       else
+        bottomButton.innerHTML = "Turn on Burning Ship Fractal";
     }).bind(this);
+
     bottomButton.onctouch = (function() {
       this.toggleBurningShip();
+      if(this.isJulia)
+        bottomButton.innerHTML = "Turn off Burning Ship Fractal";
+       else
+        bottomButton.innerHTML = "Turn on Burning Ship Fractal";
     }).bind(this);
 
     // The stage is the root container that will hold everything in our scene
