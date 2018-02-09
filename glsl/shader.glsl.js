@@ -63,10 +63,8 @@ MyShaders = {
       vec2 adjustedPos = vec2(((gl_FragCoord.x - dimension.x/2.0) / max(dimension.y, dimension.x)),
                              -((gl_FragCoord.y - dimension.y/2.0) / max(dimension.y, dimension.x)));
       if (isJulia) {
-        vec2 adjusedCursorPos = vec2(((mousePosition.x - dimension.x/2.0) / max(dimension.y, dimension.x)),
-                                    -((mousePosition.y - dimension.y/2.0) / max(dimension.y, dimension.x)));
-        c = vec2(adjusedCursorPos.x / scale.x + offset.x,
-                 adjusedCursorPos.y / scale.y + offset.y);
+        c = focusPoint;
+
         z = vec2(adjustedPos.x / scale.x + offset.x,
                  adjustedPos.y / scale.y + offset.y);
       }

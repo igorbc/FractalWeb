@@ -1,10 +1,10 @@
 var mouseDown = false;
-function MyFractalPixi(){
+function MyFractalPixi() {
   this.offset = {x: -1, y: 0 };
   this.scale = { x: 0.2, y: 0.2 };
   this.dimension = { x: 0, y: 0 };
-  this.focusPoint = { x: 0.5, y: 0.5 };
-  this.iterations = 100;
+  this.focusPoint = { x: -0.913, y: 0.27 };
+  this.iterations = 150;
   this.uniforms = {};
   this.standardOffset = 0.008;
   this.standardZoom = 0.025;
@@ -18,7 +18,7 @@ function MyFractalPixi(){
     previousTouch2: {},
     touch1: {},
     touch2: {},
-    setFirstPosition: function(touches){
+    setFirstPosition: function(touches) {
       this.touch1 = {
         x: touches[0].pageX,
         y: touches[0].pageY
@@ -30,7 +30,7 @@ function MyFractalPixi(){
       log("first x: " + this.touch1.x);
       return this;
     },
-    update: function(touches){
+    update: function(touches) {
       log("previous distance1: " + this.previousDistance());
       log("current distance: " + this.currentDistance());
       this.previousTouch1 = this.touch1;
@@ -46,23 +46,29 @@ function MyFractalPixi(){
       log("previous distance2: " + this.previousDistance());
       return this;
     },
-    distance: function(t1, t2){
+    distance: function(t1, t2) {
       return Math.sqrt((t1.x - t2.x)*(t1.x - t2.x) + (t1.y - t2.y)*(t1.y - t2.y));
     },
-    previousDistance: function(){
+    previousDistance: function() {
       return this.distance(this.previousTouch1, this.previousTouch2);
     },
-    currentDistance: function(){
+    currentDistance: function() {
       log("t1.x " + this.touch1.x + " - t2.x: " + this.touch2.x);
       return this.distance(this.touch1, this.touch2);
     },
-    scale: function(){
+    scale: function() {
       log(this.currentDistance() + " / " + this.previousDistance());
       return this.currentDistance()/this.previousDistance();
     }
   }
 
-  this.initialize = function(containderId){
+  this.updateFocusPoint = function(position) {
+    this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.x + this.offset.x;
+    this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.y + this.offset.y;
+    console.log(this.focusPoint);
+  }
+
+  this.initialize = function(containderId) {
     this.container = document.getElementById(containderId);
     this.dimension.x = this.container.clientWidth;
     this.dimension.y = this.container.clientHeight;
@@ -81,15 +87,14 @@ function MyFractalPixi(){
       this.fractal.mousePosition.y = e.pageY - this.element.offsetTop;
       this.fractal.updateUniforms();
 
-      if (!this.fractal.pause && !mouseDown){
-        this.fractal.focusPoint.x = this.fractal.mousePosition.x;
-        this.fractal.focusPoint.y = this.fractal.mousePosition.y;
+      if (!this.fractal.pause && mouseDown) {
+        this.fractal.updateFocusPoint(this.fractal.mousePosition);
       }
     }).bind({fractal: this, element: this.container});
 
     this.container.ontouchstart = (function(e) {
       e.preventDefault();
-      if(e.touches.length == 1){ // Only deal with one finger
+      if(e.touches.length == 1) { // Only deal with one finger
 
         var touch = e.touches[0]; // Get the information for finger #1
         this.fractal.previousTouch = {
@@ -98,7 +103,7 @@ function MyFractalPixi(){
         };
         log("one touch");
       }
-      else if(e.touches.length == 2){
+      else if(e.touches.length == 2) {
         this.fractal.doubleTouches.setFirstPosition(e.touches);
         log("two touches!");
       }
@@ -170,6 +175,28 @@ function MyFractalPixi(){
     return this;
   }
 
+  this.updateUniforms = function() {
+    // this.uniforms.isJulia = { type:"b", value: this.isJulia };
+    this.uniforms.isJulia.value = this.isJulia;
+    this.uniforms.burningShip.value = this.burningShip;
+    this.uniforms.oscillate.value = this.oscillate;
+    this.uniforms.iterations = { type:"i", value: this.iterations };
+    this.uniforms.dimension = { type:"v2", value: this.dimension };
+    this.uniforms.scale = { type:"v2", value: this.scale };
+    this.uniforms.offset = { type:"v2", value: this.offset };
+    this.uniforms.mousePosition = { type:"v2", value: this.mousePosition };
+    this.uniforms.focusPoint = { type:"v2", value: this.focusPoint };
+  }
+
+  this.animate = (function () {
+    this.uniforms.time.value += 0.1;
+    this.updateUniforms();
+    // start the timer for the next animation loop
+    requestAnimationFrame(this.animate);
+    // this is the main render call that makes pixi draw your container and its children.
+    this.renderer.render(this.stage);
+  }).bind(this);
+
   this.togglePause = function() {
     this.pause = !this.pause;
     this.updateUniforms();
@@ -219,31 +246,9 @@ function MyFractalPixi(){
     this.scale.x *= 1-v;
     this.scale.y *= 1-v;
   }
-
-  this.updateUniforms = function() {
-    // this.uniforms.isJulia = { type:"b", value: this.isJulia };
-    this.uniforms.isJulia.value = this.isJulia;
-    this.uniforms.burningShip.value = this.burningShip;
-    this.uniforms.oscillate.value = this.oscillate;
-    this.uniforms.iterations = { type:"i", value: this.iterations };
-    this.uniforms.dimension = { type:"v2", value: this.dimension };
-    this.uniforms.scale = { type:"v2", value: this.scale };
-    this.uniforms.offset = { type:"v2", value: this.offset };
-    this.uniforms.mousePosition = { type:"v2", value: this.mousePosition };
-    this.uniforms.focusPoint = { type:"v2", value: this.focusPoint };
-  }
-
-  this.animate = (function () {
-    this.uniforms.time.value += 0.1;
-    this.updateUniforms();
-    // start the timer for the next animation loop
-    requestAnimationFrame(this.animate);
-    // this is the main render call that makes pixi draw your container and its children.
-    this.renderer.render(this.stage);
-  }).bind(this);
 }
 
-function log(message){
+function log(message) {
   return;
   document.getElementById("debug-info").innerHTML = message + '<br>' + document.getElementById("debug-info").innerHTML;
 }

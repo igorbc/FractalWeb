@@ -162,5 +162,6 @@ function handleKeysPixi(e){
     // p
     myFractal.togglePause();
     console.log("toggle pause");
+    console.log(myFractal.pause);
   }
 }
