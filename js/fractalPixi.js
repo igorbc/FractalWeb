@@ -1,4 +1,7 @@
 var mouseDown = false;
+var touches = 0;
+var doubleTouch = false;
+
 function MyFractalPixi() {
   this.offset = {x: -1, y: 0 };
   this.scale = { x: 0.2, y: 0.2 };
@@ -27,12 +30,12 @@ function MyFractalPixi() {
         x: touches[1].pageX,
         y: touches[1].pageY
       }
-      log("first x: " + this.touch1.x);
+      log("first x: " + ffloat(this.touch1.x));
       return this;
     },
     update: function(touches) {
-      log("previous distance1: " + this.previousDistance());
-      log("current distance: " + this.currentDistance());
+      log("previous distance1: " + ffloat(this.previousDistance()));
+      log("current distance: " + ffloat(this.currentDistance()));
       this.previousTouch1 = this.touch1;
       this.touch1 = {
         x: touches[0].pageX,
@@ -43,7 +46,7 @@ function MyFractalPixi() {
         x: touches[1].pageX,
         y: touches[1].pageY
       }
-      log("previous distance2: " + this.previousDistance());
+      log("previous distance2: " + ffloat(this.previousDistance()));
       return this;
     },
     distance: function(t1, t2) {
@@ -53,11 +56,11 @@ function MyFractalPixi() {
       return this.distance(this.previousTouch1, this.previousTouch2);
     },
     currentDistance: function() {
-      log("t1.x " + this.touch1.x + " - t2.x: " + this.touch2.x);
+      log("t1.x " + ffloat(this.touch1.x + " - t2.x: " + this.touch2.x));
       return this.distance(this.touch1, this.touch2);
     },
     scale: function() {
-      log(this.currentDistance() + " / " + this.previousDistance());
+      log(ffloat(this.currentDistance()) + " / " + ffloat(this.previousDistance()));
       return this.currentDistance()/this.previousDistance();
     }
   }
@@ -94,6 +97,9 @@ function MyFractalPixi() {
 
     this.container.ontouchstart = (function(e) {
       e.preventDefault();
+      touches++;
+      if (touches > 1) doubleTouch = true;
+
       if(e.touches.length == 1) { // Only deal with one finger
 
         var touch = e.touches[0]; // Get the information for finger #1
@@ -117,7 +123,7 @@ function MyFractalPixi() {
           log("is julia");
           this.fractal.updateFocusPoint({x: touch.pageX, y: touch.pageY})
         }
-        else {
+        else if (!doubleTouch){
           log("isn't julia and no double touch");
           this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale.x;
           this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale.x;
@@ -130,30 +136,33 @@ function MyFractalPixi() {
       }
       if(e.touches.length == 2) {
         var scale = this.fractal.doubleTouches.update(e.touches).scale();
-        log("touch lenght " + scale);
+        log("touch lenght " + ffloat(scale));
         this.fractal.scale.x *= scale;
         this.fractal.scale.y *= scale;
       }
     }).bind({fractal: this, element: this.container});
 
     this.container.ontouchend = (function(e) {
+      touches--;
+      if (touches < 1) doubleTouch = false;
+
       log("touch end!");
     }).bind({fractal: this, element: this.container});
 
     var topButton = document.getElementById("top-button");
     topButton.onclick = (function() {
-      this.toggleBurningShip()
+      this.toggleJulia();
     }).bind(this);
     topButton.onctouch = (function() {
-      this.toggleBurningShip()
+      this.toggleJulia();
     }).bind(this);
 
     var bottomButton = document.getElementById("bottom-button");
     bottomButton.onclick = (function() {
-      this.toggleJulia()
+      this.toggleBurningShip();
     }).bind(this);
     bottomButton.onctouch = (function() {
-      this.toggleJulia()
+      this.toggleBurningShip();
     }).bind(this);
 
     // The stage is the root container that will hold everything in our scene
@@ -271,4 +280,8 @@ function startFractalPixi() {
     .animate();
 
   setupKeyHandlerPixi();
+}
+
+function ffloat(x) {
+  return Math.round(x*100)/100;
 }
