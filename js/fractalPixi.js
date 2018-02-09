@@ -112,18 +112,21 @@ function MyFractalPixi() {
     this.container.ontouchmove = (function(e) {
       e.preventDefault();
       if(e.touches.length == 1) {
-        var touch = e.touches[0]; // Get the information for finger #1
-        // var node = touch.target; // Find the node the drag started from
-        diff = {
-          x: this.fractal.previousTouch.x - touch.pageX,
-          y: this.fractal.previousTouch.y - touch.pageY
+        var touch = e.touches[0];
+        if (this.fractal.isJulia) {
+          log("is julia");
+          this.fractal.updateFocusPoint({x: touch.pageX, y: touch.pageY})
         }
-        this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale.x;
-        this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale.x;
-        this.fractal.previousTouch = {
-          x: touch.pageX,
-          y: touch.pageY
-        };
+        else {
+          log("isn't julia and no double touch");
+          this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale.x;
+          this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale.x;
+          this.fractal.previousTouch = {
+            x: touch.pageX,
+            y: touch.pageY
+          };
+          this.fractal.updateUniforms();
+        }
       }
       if(e.touches.length == 2) {
         var scale = this.fractal.doubleTouches.update(e.touches).scale();
@@ -145,6 +148,14 @@ function MyFractalPixi() {
       this.toggleBurningShip()
     }).bind(this);
 
+    var bottomButton = document.getElementById("bottom-button");
+    bottomButton.onclick = (function() {
+      this.toggleJulia()
+    }).bind(this);
+    bottomButton.onctouch = (function() {
+      this.toggleJulia()
+    }).bind(this);
+
     // The stage is the root container that will hold everything in our scene
     this.stage = new PIXI.Container();
 
@@ -159,7 +170,6 @@ function MyFractalPixi() {
     this.image.anchor.set(0.5);
     // Add it to the screen
     this.stage.addChild(this.image);
-
 
     this.uniforms.time = { type:"f", value: 0};
     this.uniforms.isJulia = {type:"b", value: this.isJulia };
