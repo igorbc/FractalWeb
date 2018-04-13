@@ -112,6 +112,7 @@ function MyFractalPixi() {
       this.fractal.scale.x *= 1+e.wheelDeltaY/this.fractal.dimension.y;
       this.fractal.scale.y *= 1+e.wheelDeltaY/this.fractal.dimension.y;
       // console.log(this.fractal.offset);
+      this.fractal.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
     this.container.onmousemove = (function(e) {
@@ -185,6 +186,7 @@ function MyFractalPixi() {
       if (touches < 1) doubleTouch = false;
 
       log("touch end!");
+      this.fractal.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
     var topButton = document.getElementById("top-button");
