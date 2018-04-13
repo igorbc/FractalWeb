@@ -281,6 +281,7 @@ function MyFractalPixi() {
     "&julia=" + this.isJulia +
     "&burning_ship=" + this.burningShip +
     "&oscillate=" + this.oscillate +
+    "&iterations=" + this.iterations +
     "&scale=" + this.scale.x +
     "&focus_point=" + this.focusPoint.x + "," + this.focusPoint.y +
     "&offset=" + this.offset.x + "," + this.offset.y
