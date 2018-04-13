@@ -14,6 +14,7 @@ MyShaders = {
     uniform int iterations;
     uniform vec2 mousePosition;
     uniform vec2 focusPoint;
+    uniform vec3 bailoutColor;
 
     int getIterationLimit(in int iterations, in float time) {
       if (oscillate)
@@ -98,7 +99,7 @@ MyShaders = {
       }
       iterationLimit = getIterationLimit(iterations, time);
       if(count >= iterationLimit){
-        gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+        gl_FragColor = vec4(bailoutColor, 1.0);
       }
     }
   `

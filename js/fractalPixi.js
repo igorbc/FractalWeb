@@ -18,6 +18,7 @@ function MyFractalPixi() {
   this.oscillate = false;
   this.pause = false;
   this.damping = 4;
+  this.bailoutColor = { x: 1.0, y: 1.0, z: 1.0 };
   this.doubleTouches = {
     previousTouch1: {},
     previousTouch2: {},
@@ -255,6 +256,7 @@ function MyFractalPixi() {
     this.uniforms.offset = { type:"v2", value: this.offset };
     this.uniforms.mousePosition = { type:"v2", value: this.mousePosition };
     this.uniforms.focusPoint = { type:"v2", value: this.focusPoint };
+    this.uniforms.bailoutColor = { type:"v3", value: this.bailoutColor };
   }
 
   this.initializeUrlParams = function() {
@@ -269,9 +271,9 @@ function MyFractalPixi() {
     if(iterations) this.iterations = iterations;
     var scale = Number(params.get("scale"));
     if(scale) this.scale = { x: scale, y: scale };
-    this.focusPoint = getParamPoint(this.focusPoint, params.get("focus_point"));
-    this.offset = getParamPoint(this.offset, params.get("offset"));
-    console.log(url);
+    this.focusPoint = parseAndGetParamPoint(this.focusPoint, params.get("focus_point"));
+    this.offset = parseAndGetParamPoint(this.offset, params.get("offset"));
+    this.bailoutColor = parseAndGetColor(this.bailoutColor, params.get("bailout_color"));
   }
 
   this.updateUrlParams = function() {
@@ -284,7 +286,8 @@ function MyFractalPixi() {
     "&iterations=" + this.iterations +
     "&scale=" + this.scale.x +
     "&focus_point=" + this.focusPoint.x + "," + this.focusPoint.y +
-    "&offset=" + this.offset.x + "," + this.offset.y
+    "&offset=" + this.offset.x + "," + this.offset.y +
+    "&bailout_color=" + this.bailoutColor.x + "," + this.bailoutColor.y + "," + this.bailoutColor.y
 
     console.log(newUrl);
     history.replaceState({}, null, newUrl);
@@ -384,18 +387,28 @@ function startFractalPixi() {
 function ffloat(x) {
   return Math.round(x*100)/100;
 }
-var point;
-function getParamPoint(originalLValue, newValue) {
+
+function parseAndGetColor(originalLValue, newValue) {
   if(newValue) {
-    console.log(newValue);
+    var colorArray = newValue.split(",");
+    if(colorArray.length == 3) {
+      var color = { x: Number(colorArray[0]),
+                    y: Number(colorArray[1]),
+                    z: Number(colorArray[2]) };
+      if(!isNaN(color.x) && !isNaN(color.y) && !isNaN(color.z)) {
+        return color;
+      }
+    }
+  }
+  return originalLValue;
+}
+
+function parseAndGetParamPoint(originalLValue, newValue) {
+  if(newValue) {
     var pointArray = newValue.split(",");
-    console.log("pointArray");
-    console.log(pointArray);
     if(pointArray.length == 2) {
-      point = { x: Number(pointArray[0]), y: Number(pointArray[1]) };
-      console.log('point');
-      console.log(point);
-      if(point.x && point.y) {
+      var point = { x: Number(pointArray[0]), y: Number(pointArray[1]) };
+      if(!isNaN(point.x) && !isNaN(point.y)) {
         return point;
       }
     }
