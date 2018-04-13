@@ -366,7 +366,7 @@ function MyFractalPixi() {
 }
 
 function log(message) {
-  // return;
+  return;
   document.getElementById("debug-info").innerHTML = message + '<br>' + document.getElementById("debug-info").innerHTML;
 }
 
