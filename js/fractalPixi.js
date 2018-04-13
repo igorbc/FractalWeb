@@ -84,6 +84,8 @@ function MyFractalPixi() {
 
     this.container.appendChild(this.renderer.view);
 
+    this.initializeUrlParams();
+
     this.container.onmousedown = function(e) { mouseDown = true; }
     this.container.onmouseup = (function(e) {
       mouseDown = false;
@@ -92,6 +94,7 @@ function MyFractalPixi() {
         var topButtonRight = document.getElementById("top-button-right");
         topButtonRight.innerHTML = " (double click to interact)";
       }
+      this.fractal.updateUrlParams();
     }).bind({fractal: this, element: this.container});
     this.container.ondblclick = (function(e) {
       doubleClick = !doubleClick;
@@ -252,6 +255,39 @@ function MyFractalPixi() {
     this.uniforms.focusPoint = { type:"v2", value: this.focusPoint };
   }
 
+  this.initializeUrlParams = function() {
+    var urlString = window.location.href;
+    var url = new URL(urlString);
+    var params = url.searchParams;
+    this.isJulia = (params.get("julia") == "true");
+    this.burningShip = (params.get("burning_ship") == "true");
+    this.oscillate = (params.get("oscillate") == "true");
+
+    var iterations = Number(params.get("iterations"));
+    if(iterations) this.iterations = iterations;
+    var scale = Number(params.get("scale"));
+    if(scale) this.scale = { x: scale, y: scale };
+    this.focusPoint = getParamPoint(this.focusPoint, params.get("focus_point"));
+    this.offset = getParamPoint(this.offset, params.get("offset"));
+    console.log(url);
+  }
+
+  this.updateUrlParams = function() {
+    var urlString = window.location.href;
+    var url = new URL(urlString);
+    newUrl = url.origin + url.pathname + "?" +
+    "&julia=" + this.isJulia +
+    "&burning_ship=" + this.burningShip +
+    "&oscillate=" + this.oscillate +
+    "&scale=" + this.scale.x +
+    "&focus_point=" + this.focusPoint.x + "," + this.focusPoint.y +
+    "&offset=" + this.offset.x + "," + this.offset.y
+
+    console.log(newUrl);
+    history.replaceState({}, null, newUrl);
+    // window.location = newUrl;
+  }
+
   this.animate = (function () {
     this.uniforms.time.value += 0.1;
     this.updateUniforms();
@@ -328,7 +364,7 @@ function MyFractalPixi() {
 }
 
 function log(message) {
-  return;
+  // return;
   document.getElementById("debug-info").innerHTML = message + '<br>' + document.getElementById("debug-info").innerHTML;
 }
 
@@ -344,4 +380,22 @@ function startFractalPixi() {
 
 function ffloat(x) {
   return Math.round(x*100)/100;
+}
+var point;
+function getParamPoint(originalLValue, newValue) {
+  if(newValue) {
+    console.log(newValue);
+    var pointArray = newValue.split(",");
+    console.log("pointArray");
+    console.log(pointArray);
+    if(pointArray.length == 2) {
+      point = { x: Number(pointArray[0]), y: Number(pointArray[1]) };
+      console.log('point');
+      console.log(point);
+      if(point.x && point.y) {
+        return point;
+      }
+    }
+  }
+  return originalLValue;
 }
