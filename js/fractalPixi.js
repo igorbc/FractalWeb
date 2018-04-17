@@ -202,10 +202,6 @@ function MyFractalPixi() {
     var bottomButton = document.getElementById("bottom-button");
     bottomButton.onclick = (function() {
       this.toggleBurningShip();
-      if(this.burningShip)
-        bottomButton.innerHTML = "Turn OFF Burning Ship Fractal";
-       else
-        bottomButton.innerHTML = "Turn ON Burning Ship Fractal";
     }).bind(this);
 
     bottomButton.onctouch = (function() {
@@ -215,6 +211,17 @@ function MyFractalPixi() {
        else
         bottomButton.innerHTML = "Turn ON Burning Ship Fractal";
     }).bind(this);
+
+    this.updateBurningShipText = function() {
+      var element = document.getElementById("bottom-button");
+      if(this.burningShip)
+        element.innerHTML = "Turn OFF Burning Ship Fractal";
+      else
+        element.innerHTML = "Turn ON Burning Ship Fractal";
+    }
+
+    this.updateBurningShipText();
+    this.updateJuliaSetText();
 
     // The stage is the root container that will hold everything in our scene
     this.stage = new PIXI.Container();
@@ -315,26 +322,23 @@ function MyFractalPixi() {
 
   this.toggleJulia = function(element) {
     this.isJulia = !this.isJulia;
-    var topButtonRight = document.getElementById("top-button-right");
-    if(this.isJulia) {
-      element.innerHTML = "Turn OFF Julia Fractal";
-      if (doubleClick) {
-        topButtonRight.innerHTML = " (interact by draggin)";
-      }
-      else {
-        topButtonRight.innerHTML = " (double click to interact)";
-      }
-    }
-    else {
-      element.innerHTML = "Turn ON Julia Fractal";
-      topButtonRight.innerHTML = "";
-    }
-
+    this.updateJuliaSetText();
     this.updateUniforms();
   };
 
+  this.updateJuliaSetText = function() {
+    var element = document.getElementById("top-button");
+    if(this.isJulia) {
+      element.innerHTML = "Turn OFF Julia Fractal";
+    }
+    else {
+      element.innerHTML = "Turn ON Julia Fractal";
+    }
+  }
+
   this.toggleBurningShip = function() {
     this.burningShip = !this.burningShip;
+    this.updateBurningShipText();
     this.updateUniforms();
   };
 

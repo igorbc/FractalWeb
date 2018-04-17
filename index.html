@@ -13,12 +13,23 @@
     <meta name="robots" content="index">
   </head>
   <body onload="startFractalPixi()">
-    <div id="debug-info"></div>
-    <div id="top-button"><span>Turn ON interactive Julia Fractal</span></div>
-    <div id="top-button-right"><span></span></div>
-    <div id="bottom-button"><span>Turn ON Burning Ship Fractal</span></div>
-    <div id="fractalContainer"></div>
-    <div id="focus-point" data-clicked='false'></div>
+    <div class="main-box">
+      <div class="row row-1 button-row">
+        <!-- <div id="debug-info"></div> -->
+        <div class="col-12">
+          <div id="top-button"></div>
+        </div>
+      </div>
+      <div class="row row-10">
+        <div class="col-12" id="fractalContainer"></div>
+      </div>
+      <div class="row row-1 button-row">
+        <div class="col-12">
+          <div id="bottom-button"></div>
+        </div>
+      </div>
+    </div>
+    <!-- <div id="focus-point" data-clicked='false'></div> -->
     <script id="shader" type="text/javascript" src="glsl/shader.glsl.js"></script>
   </body>
 </html>
