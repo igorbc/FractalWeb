@@ -19,6 +19,21 @@ function MyFractalPixi() {
   this.pause = false;
   this.damping = 4;
   this.bailoutColor = { x: 1.0, y: 1.0, z: 1.0 };
+  this.colors = [
+    { x: 0.0, y: 0.1, z: 0.05 },
+    { x: 0.5, y: 0.1, z: 0.0 },
+    { x: 1.0, y: 0.3, z: 0.0 },
+    { x: 1.0, y: 1.0, z: 0.0 },
+    { x: 1.0, y: 1.0, z: 0.1 }
+  ];
+  this.stops = [
+    0.05,
+    0.1,
+    0.2,
+    0.5,
+    1.0
+  ];
+
   this.doubleTouches = {
     previousTouch1: {},
     previousTouch2: {},
@@ -176,7 +191,7 @@ function MyFractalPixi() {
       }
       if(e.touches.length == 2) {
         var scale = this.fractal.doubleTouches.update(e.touches).scale();
-        log("touch lenght " + ffloat(scale));
+        log("touch length " + ffloat(scale));
         this.fractal.scale.x *= scale;
         this.fractal.scale.y *= scale;
       }
@@ -264,6 +279,9 @@ function MyFractalPixi() {
     this.uniforms.mousePosition = { type:"v2", value: this.mousePosition };
     this.uniforms.focusPoint = { type:"v2", value: this.focusPoint };
     this.uniforms.bailoutColor = { type:"v3", value: this.bailoutColor };
+    this.uniforms.numColors = { type:"i", value: this.colors.length };
+    this.uniforms.colors = { type:"v3v", value: this.colors };
+    this.uniforms.stops = { type:"fv1", value: this.stops };
   }
 
   this.initializeUrlParams = function() {
@@ -281,6 +299,11 @@ function MyFractalPixi() {
     this.focusPoint = parseAndGetParamPoint(this.focusPoint, params.get("focus_point"));
     this.offset = parseAndGetParamPoint(this.offset, params.get("offset"));
     this.bailoutColor = parseAndGetColor(this.bailoutColor, params.get("bailout_color"));
+    for(var i = 0; i < this.colors.length; i++) {
+      this.colors[i] = parseAndGetColor(this.colors[i], params.get("color"+i));
+      var stop = Number(params.get("stop"+i));
+      if(stop) this.stops[i] = stop;
+    }
   }
 
   this.updateUrlParams = function() {
@@ -294,11 +317,21 @@ function MyFractalPixi() {
     "&scale=" + this.scale.x +
     "&focus_point=" + this.focusPoint.x + "," + this.focusPoint.y +
     "&offset=" + this.offset.x + "," + this.offset.y +
-    "&bailout_color=" + this.bailoutColor.x + "," + this.bailoutColor.y + "," + this.bailoutColor.y
+    "&bailout_color=" + this.bailoutColor.x + "," + this.bailoutColor.y + "," + this.bailoutColor.z
 
-    console.log(newUrl);
+    colorStopsParams = "";
+    for(var i = 0; i < this.colors.length; i++) {
+      colorStopsParams +=
+        "&color" + i + "=" +
+        this.colors[i].x + "," +
+        this.colors[i].y + "," +
+        this.colors[i].z + "&" +
+        "&stop" + i + "=" +
+        this.stops[i]
+    }
+    newUrl += colorStopsParams;
+
     history.replaceState({}, null, newUrl);
-    // window.location = newUrl;
   }
 
   this.animate = (function () {
@@ -395,6 +428,7 @@ function ffloat(x) {
 function parseAndGetColor(originalLValue, newValue) {
   if(newValue) {
     var colorArray = newValue.split(",");
+
     if(colorArray.length == 3) {
       var color = { x: Number(colorArray[0]),
                     y: Number(colorArray[1]),
@@ -404,6 +438,7 @@ function parseAndGetColor(originalLValue, newValue) {
       }
     }
   }
+  // console.log("no new value...");
   return originalLValue;
 }
 
