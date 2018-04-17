@@ -92,20 +92,20 @@ function MyFractalPixi() {
       mouseDown = false;
       doubleClick = false;
       if (this.fractal.isJulia){
-        var topButtonRight = document.getElementById("top-button-right");
-        topButtonRight.innerHTML = " (double click to interact)";
+        // var topButtonRight = document.getElementById("top-button-right");
+        // topButtonRight.innerHTML = " (double click to interact)";
       }
       this.fractal.updateUrlParams();
     }).bind({fractal: this, element: this.container});
     this.container.ondblclick = (function(e) {
       doubleClick = !doubleClick;
       var topButtonRight = document.getElementById("top-button-right");
-      if (this.fractal.isJulia) {
-        if (doubleClick)
-          topButtonRight.innerHTML = " (interact by draggin)";
-        else
-          topButtonRight.innerHTML = " (double click to interact)";
-      }
+      // if (this.fractal.isJulia) {
+      //   if (doubleClick)
+      //     topButtonRight.innerHTML = " (interact by draggin)";
+      //   else
+      //     topButtonRight.innerHTML = " (double click to interact)";
+      // }
     }).bind({fractal: this, element: this.container});
 
     window.onwheel = (function(e) {
