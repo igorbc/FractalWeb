@@ -49,12 +49,34 @@ MyShaders = {
         return c.z * mix(vec3(1.0), rgb, c.y);
     }
 
+
+    float lmap(in float val, in float inMin, in float inMax, in float outMin, in float outMax) {
+      return clamp(outMin + ((outMax - outMin) * (val - inMin)) / (inMax - inMin), outMin, outMax);
+    }
+
     vec4 getColor(in float i, in float maxI) {
       float v = i/maxI;
-      const vec3 RED = vec3(1.0, 0.0, 0.0);
-      const vec3 YELLOW = vec3(1.0, 1.0, 0.0);
-      const vec3 DARK_COLOR = vec3(0.0, 0.15, 0.1);
-      return vec4(mix(DARK_COLOR, mix(RED, YELLOW, v), v * 5.0), 1.0);
+      vec3 colors[4];
+
+      vec3 myColor;
+      colors[0] = vec3(0.0, 0.12, 0.1);
+      colors[0] = vec3(1.0, 1.0, 1.0);
+      colors[1] = vec3(1.0, 0.0, 0.0);
+      colors[2] = vec3(1.0, 1.0, 0.0);
+      colors[3] = vec3(1.0, 1.0, 0.1);
+      float stops[4];
+      stops[0] = 0.05;
+      stops[1] = 0.2;
+      stops[2] = 0.3;
+      stops[3] = 1.0;
+      for (int i = 1; i < 4; i ++) {
+        if (v < stops[i]) {
+          float stopPct = lmap(v, stops[i-1], stops[i], 0.0, 1.0);
+          return vec4(mix(colors[i-1], colors[i], stopPct), 1.0);
+        }
+      }
+      // edge case, in case the last stop is not at 1.0
+      return vec4(colors[4 - 1], 1.0);
     }
 
     void main() {
