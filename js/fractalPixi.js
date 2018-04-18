@@ -33,7 +33,7 @@ function MyFractalPixi() {
     0.5,
     1.0
   ];
-
+  this.canUpdateFocusPointOnTouch = true;
   this.doubleTouches = {
     previousTouch1: {},
     previousTouch2: {},
@@ -80,13 +80,21 @@ function MyFractalPixi() {
     scale: function() {
       log(ffloat(this.currentDistance()) + " / " + ffloat(this.previousDistance()));
       return this.currentDistance()/this.previousDistance();
+    },
+    movement: function() {
+      return {
+        x: this.touch1.x - this.previousTouch1.x,
+        y: this.touch1.y - this.previousTouch1.y
+      }
     }
   }
 
   this.updateFocusPoint = function(position) {
-    this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.x + this.offset.x;
-    this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.y + this.offset.y;
-    //console.log(this.focusPoint);
+    if(this.canUpdateFocusPointOnTouch) {
+      this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.x + this.offset.x;
+      this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.y + this.offset.y;
+      //console.log(this.focusPoint);
+    }
   }
 
   this.initialize = function(containderId) {
@@ -191,15 +199,20 @@ function MyFractalPixi() {
       }
       if(e.touches.length == 2) {
         var scale = this.fractal.doubleTouches.update(e.touches).scale();
+        var movement =  this.fractal.doubleTouches.movement();
         log("touch length " + ffloat(scale));
         this.fractal.scale.x *= scale;
         this.fractal.scale.y *= scale;
+        this.fractal.canUpdateFocusPointOnTouch = false;
       }
     }).bind({fractal: this, element: this.container});
 
     this.container.ontouchend = (function(e) {
       touches--;
-      if (touches < 1) doubleTouch = false;
+      if (touches < 1) {
+        doubleTouch = false;
+        this.fractal.canUpdateFocusPointOnTouch = true;
+      }
 
       log("touch end!");
       this.fractal.updateUrlParams();
