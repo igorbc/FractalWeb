@@ -213,6 +213,7 @@ function MyFractalPixi() {
     // Add it to the screen
     this.stage.addChild(this.image);
 
+    this.time = 0;
     this.numColors = this.colors.length;
     this.uniformsManager = new GlslUniforms();
     this.uniformsManager.initialize(
@@ -249,8 +250,8 @@ function MyFractalPixi() {
   }
 
   this.updateUniforms = function() {
-    console.log("the uniforms in pixi");
-    console.log(this.uniforms);
+    // console.log("the uniforms in pixi");
+    // console.log(this.uniforms);
     // this.uniforms.isJulia = { type:"b", value: this.isJulia };
     this.uniforms = this.uniformsManager
       .update(this)
@@ -308,7 +309,7 @@ function MyFractalPixi() {
   }
 
   this.animate = (function () {
-    this.uniforms.time.value += 0.1;
+    this.time += 0.1;
     this.updateUniforms();
     // start the timer for the next animation loop
     requestAnimationFrame(this.animate);

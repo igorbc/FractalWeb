@@ -13,8 +13,10 @@ function GlslUniforms() {
   };
 
   this.update = function(externalUniforms) {
-    for(var i = 0; i < this.uniforms.length; i++) {
-      this.uniforms[externalUniforms[this.uniforms[i]].name].value = externalUniforms[this.uniforms[i].name];
+    keys = Object.keys(this.uniforms);
+    for(var i = 0; i < keys.length; i++) {
+      key = keys[i];
+      this.uniforms[key].value = externalUniforms[key];
     }
     return this;
   }
