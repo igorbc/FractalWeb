@@ -213,10 +213,31 @@ function MyFractalPixi() {
     // Add it to the screen
     this.stage.addChild(this.image);
 
-    this.uniforms.time = { type:"f", value: 0};
-    this.uniforms.isJulia = {type:"b", value: this.isJulia };
-    this.uniforms.burningShip = { type:"b", value: this.burningShip };
-    this.uniforms.oscillate = { type:"b", value: this.oscillate };
+    this.numColors = this.colors.length;
+    this.uniformsManager = new GlslUniforms();
+    this.uniformsManager.initialize(
+      [
+        { name: "time", uniform: {type:"f", value: 0 }},
+        { name: "isJulia", uniform: {type:"b", value: this.isJulia }},
+        { name: "burningShip", uniform: {type:"b", value: this.burningShip }},
+        { name: "oscillate", uniform: {type:"b", value: this.oscillate }},
+        { name: "iterations", uniform: {type:"i", value: this.iterations }},
+        { name: "dimension", uniform: {type:"v2", value: this.dimension }},
+        { name: "scale", uniform: {type:"v2", value: this.scale }},
+        { name: "offset", uniform: {type:"v2", value: this.offset }},
+        { name: "mousePosition", uniform: {type:"v2", value: this.mousePosition }},
+        { name: "focusPoint", uniform: {type:"v2", value: this.focusPoint }},
+        { name: "bailoutColor", uniform: {type:"v3", value: this.bailoutColor }},
+        { name: "numColors", uniform: {type:"i", value: this.numColors }},
+        { name: "colors", uniform: {type:"v3v", value: this.colors }},
+        { name: "stops", uniform: {type:"fv1", value: this.stops }}
+      ]
+    );
+    this.uniforms = this
+      .uniformsManager
+      .getUniforms();
+
+
     this.updateUniforms();
     //Get shader code as a string
     var shaderCode = MyShaders.fractalShader;
@@ -228,20 +249,12 @@ function MyFractalPixi() {
   }
 
   this.updateUniforms = function() {
+    console.log("the uniforms in pixi");
+    console.log(this.uniforms);
     // this.uniforms.isJulia = { type:"b", value: this.isJulia };
-    this.uniforms.isJulia.value = this.isJulia;
-    this.uniforms.burningShip.value = this.burningShip;
-    this.uniforms.oscillate.value = this.oscillate;
-    this.uniforms.iterations = { type:"i", value: this.iterations };
-    this.uniforms.dimension = { type:"v2", value: this.dimension };
-    this.uniforms.scale = { type:"v2", value: this.scale };
-    this.uniforms.offset = { type:"v2", value: this.offset };
-    this.uniforms.mousePosition = { type:"v2", value: this.mousePosition };
-    this.uniforms.focusPoint = { type:"v2", value: this.focusPoint };
-    this.uniforms.bailoutColor = { type:"v3", value: this.bailoutColor };
-    this.uniforms.numColors = { type:"i", value: this.colors.length };
-    this.uniforms.colors = { type:"v3v", value: this.colors };
-    this.uniforms.stops = { type:"fv1", value: this.stops };
+    this.uniforms = this.uniformsManager
+      .update(this)
+      .getUniforms();
   }
 
   this.initializeUrlParams = function() {
