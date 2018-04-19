@@ -40,7 +40,6 @@ function MyFractalPixi() {
     if(this.canUpdateFocusPointOnTouch) {
       this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.x + this.offset.x;
       this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.y + this.offset.y;
-      //console.log(this.focusPoint);
     }
   }
 
@@ -82,7 +81,6 @@ function MyFractalPixi() {
       this.fractal.offset.x -= e.wheelDeltaX/(this.fractal.scale.x * this.fractal.dimension.x * this.fractal.damping );
       this.fractal.scale.x *= 1+e.wheelDeltaY/this.fractal.dimension.y;
       this.fractal.scale.y *= 1+e.wheelDeltaY/this.fractal.dimension.y;
-      // console.log(this.fractal.offset);
       this.fractal.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
@@ -250,9 +248,6 @@ function MyFractalPixi() {
   }
 
   this.updateUniforms = function() {
-    // console.log("the uniforms in pixi");
-    // console.log(this.uniforms);
-    // this.uniforms.isJulia = { type:"b", value: this.isJulia };
     this.uniforms = this.uniformsManager
       .update(this)
       .getUniforms();
@@ -393,7 +388,6 @@ function parseAndGetColor(originalLValue, newValue) {
       }
     }
   }
-  // console.log("no new value...");
   return originalLValue;
 }
 
