@@ -20,7 +20,7 @@ function MyFractalPixi() {
   this.damping = 4;
   this.bailoutColor = { x: 1.0, y: 1.0, z: 1.0 };
   this.colors = [
-    { x: 0.0, y: 0.1, z: 0.05 },
+    { x: 0.0, y: 0.15, z: 0.1 },
     { x: 0.5, y: 0.1, z: 0.0 },
     { x: 1.0, y: 0.3, z: 0.0 },
     { x: 1.0, y: 1.0, z: 0.0 },
@@ -34,60 +34,7 @@ function MyFractalPixi() {
     1.0
   ];
   this.canUpdateFocusPointOnTouch = true;
-  this.doubleTouches = {
-    previousTouch1: {},
-    previousTouch2: {},
-    touch1: {},
-    touch2: {},
-    setFirstPosition: function(touches) {
-      this.touch1 = {
-        x: touches[0].pageX,
-        y: touches[0].pageY
-      },
-      this.touch2 = {
-        x: touches[1].pageX,
-        y: touches[1].pageY
-      }
-      log("first x: " + ffloat(this.touch1.x));
-      return this;
-    },
-    update: function(touches) {
-      log("previous distance1: " + ffloat(this.previousDistance()));
-      log("current distance: " + ffloat(this.currentDistance()));
-      this.previousTouch1 = this.touch1;
-      this.touch1 = {
-        x: touches[0].pageX,
-        y: touches[0].pageY
-      };
-      this.previousTouch2 = this.touch2;
-      this.touch2 = {
-        x: touches[1].pageX,
-        y: touches[1].pageY
-      }
-      log("previous distance2: " + ffloat(this.previousDistance()));
-      return this;
-    },
-    distance: function(t1, t2) {
-      return Math.sqrt((t1.x - t2.x)*(t1.x - t2.x) + (t1.y - t2.y)*(t1.y - t2.y));
-    },
-    previousDistance: function() {
-      return this.distance(this.previousTouch1, this.previousTouch2);
-    },
-    currentDistance: function() {
-      log("t1.x " + ffloat(this.touch1.x + " - t2.x: " + this.touch2.x));
-      return this.distance(this.touch1, this.touch2);
-    },
-    scale: function() {
-      log(ffloat(this.currentDistance()) + " / " + ffloat(this.previousDistance()));
-      return this.currentDistance()/this.previousDistance();
-    },
-    movement: function() {
-      return {
-        x: this.touch1.x - this.previousTouch1.x,
-        y: this.touch1.y - this.previousTouch1.y
-      }
-    }
-  }
+  this.touchManager = new TouchManager();
 
   this.updateFocusPoint = function(position) {
     if(this.canUpdateFocusPointOnTouch) {
@@ -173,7 +120,7 @@ function MyFractalPixi() {
         log("one touch");
       }
       else if(e.touches.length == 2) {
-        this.fractal.doubleTouches.setFirstPosition(e.touches);
+        this.fractal.touchManager.setFirstPosition(e.touches);
         log("two touches!");
       }
     }).bind({fractal: this, element: this.container});
@@ -198,9 +145,9 @@ function MyFractalPixi() {
         }
       }
       if(e.touches.length == 2) {
-        var scale = this.fractal.doubleTouches.update(e.touches).scale();
-        var movement =  this.fractal.doubleTouches.movement();
-        log("touch length " + ffloat(scale));
+        var scale = this.fractal.touchManager.update(e.touches).scale();
+        var movement =  this.fractal.touchManager.movement();
+        log("touch length " + scale);
         this.fractal.scale.x *= scale;
         this.fractal.scale.y *= scale;
         this.fractal.canUpdateFocusPointOnTouch = false;
@@ -417,25 +364,6 @@ function MyFractalPixi() {
     this.scale.x *= 1-v;
     this.scale.y *= 1-v;
   }
-}
-
-function log(message) {
-  return;
-  document.getElementById("debug-info").innerHTML = message + '<br>' + document.getElementById("debug-info").innerHTML;
-}
-
-function startFractalPixi() {
-  window.myFractal = new MyFractalPixi();
-
-  myFractal
-    .initialize("fractalContainer")
-    .animate();
-
-  setupKeyHandlerPixi();
-}
-
-function ffloat(x) {
-  return Math.round(x*100)/100;
 }
 
 function parseAndGetColor(originalLValue, newValue) {
