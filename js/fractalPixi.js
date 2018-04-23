@@ -48,7 +48,7 @@ function MyFractalPixi() {
     this.dimension.x = this.container.clientWidth;
     this.dimension.y = this.container.clientHeight;
     // Chooses either WebGL if supported or falls back to Canvas rendering
-    this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y);
+    this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y, { preserveDrawingBuffer:true });
     // Add the render view object into the page
     this.renderer.view.setAttribute('id','fractalPixi')
 
@@ -148,6 +148,8 @@ function MyFractalPixi() {
         log("touch length " + scale);
         this.fractal.scale.x *= scale;
         this.fractal.scale.y *= scale;
+        this.fractal.offset.x -= movement.x / this.fractal.dimension.x / this.fractal.scale.x;
+        this.fractal.offset.y -= movement.y / this.fractal.dimension.y / this.fractal.scale.y;
         this.fractal.canUpdateFocusPointOnTouch = false;
       }
     }).bind({fractal: this, element: this.container});
