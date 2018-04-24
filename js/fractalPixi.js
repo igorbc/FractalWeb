@@ -5,7 +5,7 @@ var doubleClick = false;
 
 function MyFractalPixi() {
   this.offset = {x: -1, y: 0 };
-  this.scale = { x: 0.2, y: 0.2 };
+  this.scale = 0.2;
   this.dimension = { x: 0, y: 0 };
   this.focusPoint = { x: -0.913, y: 0.27 };
   this.iterations = 150;
@@ -37,9 +37,28 @@ function MyFractalPixi() {
 
   this.updateFocusPoint = function(position) {
     if(this.canUpdateFocusPointOnTouch) {
-      this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.x + this.offset.x;
-      this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale.y + this.offset.y;
+      this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale + this.offset.x;
+      this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale + this.offset.y;
     }
+  }
+
+  this.setupUrlParamManager = function() {
+    this.urlParamManager = new URLParamManager();
+    this.urlParamManager.initialize(this, [
+      { varName: "burningShip", paramName: "burning_ship", type: "bool" },
+      { varName: "oscillate", paramName: "oscillate", type: "bool" },
+      { varName: "iterations", paramName: "iterations", type: "int" },
+      { varName: "scale", paramName: "scale", type: "float" },
+      { varName: "focusPoint", paramName: "focus_point", type: "vec2" },
+      { varName: "offset", paramName: "offset", type: "vec2" },
+      { varName: "bailoutColor", paramName: "bailout_color", type: "vec3" },
+      { varName: "isJulia", paramName: "julia", type: "bool" },
+      { varName: "stops", paramName: "stops", type: "aint" },
+      { varName: "colors", paramName: "colors", type: "avec3" }
+    ])
+    this.urlParamManager.loadUrlParams();
+
+    return this;
   }
 
   this.initialize = function(containderId, canvasId) {
@@ -79,7 +98,7 @@ function MyFractalPixi() {
         { name: "oscillate", uniform: {type:"b", value: this.oscillate }},
         { name: "iterations", uniform: {type:"i", value: this.iterations }},
         { name: "dimension", uniform: {type:"v2", value: this.dimension }},
-        { name: "scale", uniform: {type:"v2", value: this.scale }},
+        { name: "scale", uniform: {type:"f", value: this.scale }},
         { name: "offset", uniform: {type:"v2", value: this.offset }},
         { name: "mousePosition", uniform: {type:"v2", value: this.mousePosition }},
         { name: "focusPoint", uniform: {type:"v2", value: this.focusPoint }},
@@ -114,7 +133,8 @@ function MyFractalPixi() {
         // var topButtonRight = document.getElementById("top-button-right");
         // topButtonRight.innerHTML = " (double click to interact)";
       }
-      this.fractal.updateUrlParams();
+      if(this.fractal.urlParamManager)
+        this.fractal.urlParamManager.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
     this.container.ondblclick = (function(e) {
@@ -126,8 +146,8 @@ function MyFractalPixi() {
         this.fractal.updateFocusPoint(this.fractal.mousePosition);
       }
       else if (mouseDown) {
-        this.fractal.offset.x -= e.movementX/(this.fractal.scale.x * this.fractal.dimension.x);
-        this.fractal.offset.y -= e.movementY/(this.fractal.scale.x * this.fractal.dimension.y);
+        this.fractal.offset.x -= e.movementX/(this.fractal.scale * this.fractal.dimension.x);
+        this.fractal.offset.y -= e.movementY/(this.fractal.scale * this.fractal.dimension.y);
         return;
       }
       if(this.fractal.pause) return;
@@ -141,10 +161,10 @@ function MyFractalPixi() {
     }).bind({fractal: this, element: this.container});
 
     window.onwheel = (function(e) {
-      this.fractal.offset.x -= e.wheelDeltaX/(this.fractal.scale.x * this.fractal.dimension.x * this.fractal.damping );
-      this.fractal.scale.x *= 1+e.wheelDeltaY/this.fractal.dimension.y;
-      this.fractal.scale.y *= 1+e.wheelDeltaY/this.fractal.dimension.y;
-      this.fractal.updateUrlParams();
+      this.fractal.offset.x -= e.wheelDeltaX/(this.fractal.scale * this.fractal.dimension.x * this.fractal.damping );
+      this.fractal.scale *= 1+e.wheelDeltaY/this.fractal.dimension.y;
+      if(this.fractal.urlParamManager)
+        this.fractal.urlParamManager.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
     return this;
@@ -182,8 +202,8 @@ function MyFractalPixi() {
         }
         else if (!doubleTouch){
           log("isn't julia and no double touch");
-          this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale.x;
-          this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale.x;
+          this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale;
+          this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale;
           this.fractal.previousTouch = {
             x: touch.pageX,
             y: touch.pageY
@@ -195,10 +215,9 @@ function MyFractalPixi() {
         var scale = this.fractal.touchManager.update(e.touches).scale();
         var movement =  this.fractal.touchManager.movement();
         log("touch length " + scale);
-        this.fractal.scale.x *= scale;
-        this.fractal.scale.y *= scale;
-        this.fractal.offset.x -= movement.x / this.fractal.dimension.x / this.fractal.scale.x;
-        this.fractal.offset.y -= movement.y / this.fractal.dimension.y / this.fractal.scale.y;
+        this.fractal.scale *= scale;
+        this.fractal.offset.x -= movement.x / this.fractal.dimension.x / this.fractal.scale;
+        this.fractal.offset.y -= movement.y / this.fractal.dimension.y / this.fractal.scale;
         this.fractal.canUpdateFocusPointOnTouch = false;
       }
     }).bind({fractal: this, element: this.container});
@@ -211,7 +230,7 @@ function MyFractalPixi() {
       }
 
       log("touch end!");
-      this.fractal.updateUrlParams();
+      this.fractal.urlParamManager.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
     var burningShipElement = document.getElementById(burningShipElementId);
@@ -265,59 +284,6 @@ function MyFractalPixi() {
       .getUniforms();
   }
 
-  this.loadUrlParams = function() {
-    var urlString = window.location.href;
-    var url = new URL(urlString);
-    var params = url.searchParams;
-    this.isJulia = (params.get("julia") == "true");
-    this.burningShip = (params.get("burning_ship") == "true");
-    this.oscillate = (params.get("oscillate") == "true");
-
-    var iterations = Number(params.get("iterations"));
-    if(iterations) this.iterations = iterations;
-    var scale = Number(params.get("scale"));
-    if(scale) this.scale = { x: scale, y: scale };
-    this.focusPoint = parseAndGetParamPoint(this.focusPoint, params.get("focus_point"));
-    this.offset = parseAndGetParamPoint(this.offset, params.get("offset"));
-    this.bailoutColor = parseAndGetColor(this.bailoutColor, params.get("bailout_color"));
-    for(var i = 0; i < this.colors.length; i++) {
-      this.colors[i] = parseAndGetColor(this.colors[i], params.get("color"+i));
-      var stop = Number(params.get("stop"+i));
-      if(stop) this.stops[i] = stop;
-    }
-
-    return this;
-  }
-
-  this.updateUrlParams = function() {
-    var urlString = window.location.href;
-    var url = new URL(urlString);
-    newUrl = url.origin + url.pathname + "?" +
-    "&julia=" + this.isJulia +
-    "&burning_ship=" + this.burningShip +
-    "&oscillate=" + this.oscillate +
-    "&iterations=" + this.iterations +
-    "&scale=" + this.scale.x +
-    "&focus_point=" + this.focusPoint.x + "," + this.focusPoint.y +
-    "&offset=" + this.offset.x + "," + this.offset.y +
-    "&bailout_color=" + this.bailoutColor.x + "," + this.bailoutColor.y + "," + this.bailoutColor.z
-
-    colorStopsParams = "";
-    for(var i = 0; i < this.colors.length; i++) {
-      colorStopsParams +=
-        "&color" + i + "=" +
-        this.colors[i].x + "," +
-        this.colors[i].y + "," +
-        this.colors[i].z + "&" +
-        "&stop" + i + "=" +
-        this.stops[i]
-    }
-    newUrl += colorStopsParams;
-
-    history.replaceState({}, null, newUrl);
-    return this;
-  }
-
   this.lastRender = 0;
   this.animate = (function (timestamp) {
     // console.log("------");
@@ -369,61 +335,32 @@ function MyFractalPixi() {
   };
 
   this.incrementOffsetX = function(v = this.standardOffset) {
-    this.offset.x += v / this.scale.x;
+    this.offset.x += v / this.scale;
     this.updateUniforms();
   };
 
   this.incrementOffsetY = function(v = this.standardOffset) {
-    this.offset.y -= v / this.scale.y;
+    this.offset.y -= v / this.scale;
     this.updateUniforms();
   };
 
   this.decrementOffsetX = function(v = this.standardOffset) {
-    this.offset.x -= v / this.scale.x;
+    this.offset.x -= v / this.scale;
     this.updateUniforms();
   };
 
   this.decrementOffsetY = function(v = this.standardOffset) {
-    this.offset.y += v / this.scale.y;
+    this.offset.y += v / this.scale;
     this.updateUniforms();
   };
 
   this.zoomIn = function(v = this.standardZoom) {
-    this.scale.x *= 1+v;
-    this.scale.y *= 1+v;
+    this.scale *= 1+v;
+    this.scale *= 1+v;
   }
 
   this.zoomOut = function(v = this.standardZoom) {
-    this.scale.x *= 1-v;
-    this.scale.y *= 1-v;
+    this.scale *= 1-v;
+    this.scale *= 1-v;
   }
-}
-
-function parseAndGetColor(originalLValue, newValue) {
-  if(newValue) {
-    var colorArray = newValue.split(",");
-
-    if(colorArray.length == 3) {
-      var color = { x: Number(colorArray[0]),
-                    y: Number(colorArray[1]),
-                    z: Number(colorArray[2]) };
-      if(!isNaN(color.x) && !isNaN(color.y) && !isNaN(color.z)) {
-        return color;
-      }
-    }
-  }
-  return originalLValue;
-}
-
-function parseAndGetParamPoint(originalLValue, newValue) {
-  if(newValue) {
-    var pointArray = newValue.split(",");
-    if(pointArray.length == 2) {
-      var point = { x: Number(pointArray[0]), y: Number(pointArray[1]) };
-      if(!isNaN(point.x) && !isNaN(point.y)) {
-        return point;
-      }
-    }
-  }
-  return originalLValue;
 }

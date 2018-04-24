@@ -9,7 +9,7 @@ MyShaders = {
     uniform bool oscillate;
     uniform float time; //Declare that we're using this uniform
     uniform vec2 dimension;
-    uniform vec2 scale;
+    uniform float scale;
     uniform vec2 offset;
     uniform int iterations;
     uniform vec2 mousePosition;
@@ -82,13 +82,13 @@ MyShaders = {
       if (isJulia) {
         c = focusPoint;
 
-        z = vec2(adjustedPos.x / scale.x + offset.x,
-                 adjustedPos.y / scale.y + offset.y);
+        z = vec2(adjustedPos.x / scale + offset.x,
+                 adjustedPos.y / scale + offset.y);
       }
       else {
         z = vec2(0.0, 0.0);
-        c = vec2(adjustedPos.x / scale.x + offset.x,
-                 adjustedPos.y / scale.y + offset.y);
+        c = vec2(adjustedPos.x / scale + offset.x,
+                 adjustedPos.y / scale + offset.y);
       }
 
       int iterationLimit;

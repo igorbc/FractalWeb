@@ -3,7 +3,7 @@ function startFractalPixi() {
 
   myFractal
     .initialize("fractal-container", "fractal-pixi")
-    .loadUrlParams()
+    .setupUrlParamManager()
     .setupMouseInteraction()
     .setupTouchInteraction("julia-button", "burning-ship-button")
     .setupUi("julia-button", "burning-ship-button")
