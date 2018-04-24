@@ -230,7 +230,8 @@ function MyFractalPixi() {
       }
 
       log("touch end!");
-      this.fractal.urlParamManager.updateUrlParams();
+      if(this.fractal.urlParamManager)
+        this.fractal.urlParamManager.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
     var burningShipElement = document.getElementById(burningShipElementId);

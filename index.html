@@ -31,23 +31,13 @@
 
   </head>
   <body onload="startFractalPixi()">
-    <div class="main-box">
-      <div class="row row-1 button-row">
-        <!-- <div id="debug-info"></div> -->
-
-        <div class="col-6">
-          <div id="julia-button"></div>
-        </div>
-        <div class="col-6">
-          <div id="burning-ship-button"></div>
-        </div>
-      </div>
-      <div class="row row-11">
-        <div class="col-12" id="fractal-container"></div>
-      </div>
-      <!-- <div class="row row-1 button-row">
-
-      </div> -->
+    <div class="wrapper">
+      <header class="flex-box aligner">
+        <div class="align-items menu-item" id="julia-button">Julia</div>
+        <div class="align-items menu-item" id="burning-ship-button">Burning Ship</div>
+      </header>
+      <main class="flex-box" id="fractal-container">
+      </main>
     </div>
     <!-- <div id="focus-point" data-clicked='false'></div> -->
     <script id="shader" type="text/javascript" src="glsl/shader.glsl.js"></script>
