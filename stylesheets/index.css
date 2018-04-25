@@ -5,7 +5,8 @@ body {
 }
 
 html {
-    font-family: "Lucida Sans", sans-serif;
+  font-family: "Lucida Sans", sans-serif;
+  /* font-size: ; */
 }
 
 .wrapper {
@@ -18,10 +19,10 @@ html {
   flex: 1 100%;
 }
 
-.menu-item {
+.navbar-item {
   box-sizing: border-box;
   display: inline-block;
-  width: 50vw;
+  /* width: 50vw; */
   /* flex: 1 auto; */
 }
 
@@ -37,6 +38,7 @@ html {
   align-items: center;
   justify-content: center;
   text-align: center;
+  flex-grow: 1;
 }
 
 .aligner-right {
@@ -58,6 +60,70 @@ main {
   min-height:90vh;
   /* border: solid yellow 10px; */
 }
+
+#title {
+  flex: 5;
+}
+
+#julia-button {
+  flex: 1;
+
+}
+
+#burning-ship-button {
+  flex: 1;
+}
+
+#menu-button {
+  flex: 1;
+  /* align-self: center; */
+  /* justify-content: center; */
+  padding: 1.5em;
+}
+
+#menu-button span {
+  margin: 0.4em auto;
+  align-self: flex-end;
+  display: flex;
+  border-radius: 3px;
+  background-color: rgb(180, 180, 180);
+  height: 0.4em;
+  width: 2.5em;
+}
+
+#side-menu {
+  position: absolute;
+  right: 0;
+  /* flex: 1; */
+  width: 0vw;
+  height: 90vh;
+  background: rgba(70,70,70, 0.5);
+  transition: 0.25s;
+  overflow: hidden;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex: 1;
+  z-index: 1;
+}
+
+#side-menu.active {
+  width: 280px;
+  transform: translateX(0);
+  transition: 0.25s;
+  /* z-index: 200; */
+}
+
+
+.menu-item {
+  box-sizing: border-box;
+  display: flex;
+  white-space: nowrap;
+  overflow-x: hidden;
+  flex: 1;
+  padding: 1em;
+  color: #fff;
+}
+
 
 #fractal-container {
   width: 100%;

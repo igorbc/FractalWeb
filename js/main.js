@@ -10,4 +10,9 @@ function startFractalPixi() {
     .startAnimation();
 
   setupKeyHandlerPixi();
+  var menuButton = document.getElementById("menu-button");
+  menuButton.onclick = function() {
+    document.getElementById("side-menu").classList.toggle("active");
+  }
+
 }

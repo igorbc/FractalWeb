@@ -259,9 +259,17 @@ function MyFractalPixi() {
       this.toggleJulia();
       this.updateJuliaSetText(juliaElement);
     }).bind(this);
+    juliaElement.ontouchstart = (function() {
+      this.toggleJulia();
+      this.updateJuliaSetText(juliaElement);
+    }).bind(this);
 
     var burningShipElement = document.getElementById(burningShipElementId);
     burningShipElement.onclick = (function() {
+      this.toggleBurningShip();
+      this.updateBurningShipText(burningShipElement);
+    }).bind(this);
+    burningShipElement.ontouchstart = (function() {
       this.toggleBurningShip();
       this.updateBurningShipText(burningShipElement);
     }).bind(this);
