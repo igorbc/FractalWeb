@@ -15,4 +15,11 @@ function startFractalPixi() {
     document.getElementById("side-menu").classList.toggle("active");
   }
 
+  var saveImageButton = document.getElementById("save-png-button");
+  saveImageButton.onclick = function() {
+    downloadCanvasAsPng(document.getElementById("fractal-pixi"), "fractal.png");
+  }
+  saveImageButton.ontouchstart = function() {
+    downloadCanvasAsPng(document.getElementById("fractal-pixi"), "fractal.png");
+  }
 }
