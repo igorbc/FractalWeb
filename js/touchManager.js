@@ -12,13 +12,13 @@ function TouchManager() {
       x: touches[1].pageX,
       y: touches[1].pageY
     }
-    log("first x: " + ffloat(this.touch1.x));
+    // log("first x: " + ffloat(this.touch1.x));
     return this;
   },
 
   this.update = function(touches) {
-    log("previous distance1: " + ffloat(this.previousDistance()));
-    log("current distance: " + ffloat(this.currentDistance()));
+    // log("previous distance1: " + ffloat(this.previousDistance()));
+    // log("current distance: " + ffloat(this.currentDistance()));
     this.previousTouch1 = this.touch1;
     this.touch1 = {
       x: touches[0].pageX,
@@ -29,7 +29,7 @@ function TouchManager() {
       x: touches[1].pageX,
       y: touches[1].pageY
     }
-    log("previous distance2: " + ffloat(this.previousDistance()));
+    // log("previous distance2: " + ffloat(this.previousDistance()));
     return this;
   },
 
@@ -42,12 +42,12 @@ function TouchManager() {
   },
 
   this.currentDistance = function() {
-    log("t1.x " + ffloat(this.touch1.x + " - t2.x: " + this.touch2.x));
+    // log("t1.x " + ffloat(this.touch1.x + " - t2.x: " + this.touch2.x));
     return this.distance(this.touch1, this.touch2);
   },
 
   this.scale = function() {
-    log(ffloat(this.currentDistance()) + " / " + ffloat(this.previousDistance()));
+    // log(ffloat(this.currentDistance()) + " / " + ffloat(this.previousDistance()));
     return this.currentDistance()/this.previousDistance();
   },
 

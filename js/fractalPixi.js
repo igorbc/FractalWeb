@@ -61,10 +61,17 @@ function MyFractalPixi() {
     return this;
   }
 
-  this.initialize = function(containderId, canvasId) {
+  this.initialize = function(containderId, canvasId, useScreenSize = false) {
     this.container = document.getElementById(containderId);
-    this.dimension.x = this.container.clientWidth;
-    this.dimension.y = this.container.clientHeight;
+    if(useScreenSize) {
+      this.dimension.x = screen.width;
+      this.dimension.y = screen.height;
+    }
+    else {
+      this.dimension.x = this.container.clientWidth;
+      this.dimension.y = this.container.clientHeight;
+    }
+
     // Chooses either WebGL if supported or falls back to Canvas rendering
     this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y, { preserveDrawingBuffer:true });
     // Add the render view object into the page
@@ -184,11 +191,11 @@ function MyFractalPixi() {
           x: touch.pageX,
           y: touch.pageY
         };
-        log("one touch");
+        // log("one touch");
       }
       else if(e.touches.length == 2) {
         this.fractal.touchManager.setFirstPosition(e.touches);
-        log("two touches!");
+        // log("two touches!");
       }
     }).bind({fractal: this, element: this.container});
 
@@ -197,11 +204,11 @@ function MyFractalPixi() {
       if(e.touches.length == 1) {
         var touch = e.touches[0];
         if (this.fractal.isJulia) {
-          log("is julia");
+          // log("is julia");
           this.fractal.updateFocusPoint({x: touch.pageX, y: touch.pageY})
         }
         else if (!doubleTouch){
-          log("isn't julia and no double touch");
+          // log("isn't julia and no double touch");
           this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale;
           this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale;
           this.fractal.previousTouch = {
@@ -214,7 +221,7 @@ function MyFractalPixi() {
       if(e.touches.length == 2) {
         var scale = this.fractal.touchManager.update(e.touches).scale();
         var movement =  this.fractal.touchManager.movement();
-        log("touch length " + scale);
+        // log("touch length " + scale);
         this.fractal.scale *= scale;
         this.fractal.offset.x -= movement.x / this.fractal.dimension.x / this.fractal.scale;
         this.fractal.offset.y -= movement.y / this.fractal.dimension.y / this.fractal.scale;
@@ -229,7 +236,7 @@ function MyFractalPixi() {
         this.fractal.canUpdateFocusPointOnTouch = true;
       }
 
-      log("touch end!");
+      // log("touch end!");
       if(this.fractal.urlParamManager)
         this.fractal.urlParamManager.updateUrlParams();
     }).bind({fractal: this, element: this.container});
@@ -312,6 +319,10 @@ function MyFractalPixi() {
     this.lastRender = 0;
     this.time = 0;
     requestAnimationFrame(this.animate);
+  }
+
+  this.render = function() {
+    this.renderer.render(this.stage);
   }
 
   this.togglePause = function() {

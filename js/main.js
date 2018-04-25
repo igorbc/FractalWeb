@@ -17,9 +17,25 @@ function startFractalPixi() {
 
   var saveImageButton = document.getElementById("save-png-button");
   saveImageButton.onclick = function() {
-    downloadCanvasAsPng(document.getElementById("fractal-pixi"), "fractal.png");
+    var newFractal = makeNewFractal();
+    downloadCanvasAsPng(document.getElementById("new-fractal-pixi"), "fractal.png");
+    document.getElementById("new-fractal-pixi").remove();
   }
   saveImageButton.ontouchstart = function() {
-    downloadCanvasAsPng(document.getElementById("fractal-pixi"), "fractal.png");
+    var newFractal = makeNewFractal();
+    downloadCanvasAsPng(document.getElementById("new-fractal-pixi"), "fractal.png");
+    document.getElementById("new-fractal-pixi").remove();
+  }
+
+  function makeNewFractal() {
+    window.newFractal = new MyFractalPixi();
+
+    newFractal
+      .initialize("download-container", "new-fractal-pixi", true)
+      .setupUrlParamManager()
+      .setupMouseInteraction();
+    newFractal.urlParamManager.loadUrlParams();
+    newFractal.updateUniforms();
+    newFractal.render();
   }
 }
