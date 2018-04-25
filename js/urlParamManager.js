@@ -32,15 +32,18 @@ function URLParamManager() {
     var url = new URL(urlString);
     var newUrl = url.origin + url.pathname + "?";
 
+    newUrl += this.getParams();
+
+    history.replaceState({}, null, newUrl);
+    return this;
+  }
+
+  this.getParams = function() {
     var params = "";
     for(var i = 0; i < this.paramsInfo.length; i++) {
       params += this.getParamString(this.paramsInfo[i]);
     }
-
-    newUrl += params;
-
-    history.replaceState({}, null, newUrl);
-    return this;
+    return params;
   }
 
   this.getParamString = function(paramInfo) {
