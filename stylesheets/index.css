@@ -74,7 +74,7 @@ main {
 }
 
 .menu-item-text {
-  padding-left: 0.5em;
+  padding-left: 1em;
 }
 
 #julia-button-text {
@@ -110,7 +110,7 @@ main {
   position: absolute;
   right: 0;
   /* flex: 1; */
-  width: 0vw;
+  width: 3em;
   height: 90vh;
   background: rgba(70,70,70, 0.5);
   transition: 0.25s;
@@ -134,7 +134,7 @@ main {
   white-space: nowrap;
   overflow-x: hidden;
   flex: 1;
-  padding: 1em;
+  padding: 0.8em;
   color: #fff;
 }
 

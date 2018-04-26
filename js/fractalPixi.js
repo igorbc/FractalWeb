@@ -345,12 +345,12 @@ function MyFractalPixi() {
     if(this.focusPointLocked) {
       element.innerHTML = "UNLOCK fractal interaction";
       icon.innerHTML = "lock";
-      icon.classList.add("off");
+      icon.classList.remove("off");
     }
     else {
       element.innerHTML = "LOCK fractal interaction";
       icon.innerHTML = "lock_open";
-      icon.classList.remove("off");
+      icon.classList.add("off");
     }
   }
 
