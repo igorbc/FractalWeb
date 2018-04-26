@@ -1,13 +1,13 @@
 var mouseDown = false;
 var touches = 0;
 var doubleTouch = false;
-var doubleClick = false;
 
 function MyFractalPixi() {
   this.offset = {x: -1, y: 0 };
   this.scale = 0.2;
   this.dimension = { x: 0, y: 0 };
   this.focusPoint = { x: -0.913, y: 0.27 };
+  this.focusPointLocked = true;
   this.iterations = 150;
   this.uniforms = {};
   this.standardOffset = 0.008;
@@ -16,7 +16,6 @@ function MyFractalPixi() {
   this.isJulia = false;
   this.burningShip = false;
   this.oscillate = false;
-  this.pause = false;
   this.damping = 4;
   this.bailoutColor = { x: 1.0, y: 1.0, z: 1.0 };
   this.colors = [
@@ -33,10 +32,9 @@ function MyFractalPixi() {
     0.5,
     1.0
   ];
-  this.canUpdateFocusPointOnTouch = true;
 
   this.updateFocusPoint = function(position) {
-    if(this.canUpdateFocusPointOnTouch) {
+    if(!this.focusPointLocked) {
       this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale + this.offset.x;
       this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale + this.offset.y;
     }
@@ -133,38 +131,26 @@ function MyFractalPixi() {
   this.setupMouseInteraction = function() {
     this.container.onmousedown = function(e) { mouseDown = true; }
 
-    this.container.onmouseup = (function(e) {
-      mouseDown = false;
-      doubleClick = false;
-      if (this.fractal.isJulia){
-        // var topButtonRight = document.getElementById("top-button-right");
-        // topButtonRight.innerHTML = " (double click to interact)";
-      }
-      if(this.fractal.urlParamManager)
-        this.fractal.urlParamManager.updateUrlParams();
-    }).bind({fractal: this, element: this.container});
-
-    this.container.ondblclick = (function(e) {
-      doubleClick = !doubleClick;
-    }).bind({fractal: this, element: this.container});
-
     this.container.onmousemove = (function(e) {
-      if(mouseDown && doubleClick){
+      this.fractal.mousePosition.x = e.pageX - this.element.offsetLeft;
+      this.fractal.mousePosition.y = e.pageY - this.element.offsetTop;
+      if(mouseDown && !this.fractal.focusPointLocked) {
         this.fractal.updateFocusPoint(this.fractal.mousePosition);
       }
       else if (mouseDown) {
         this.fractal.offset.x -= e.movementX/(this.fractal.scale * this.fractal.dimension.x);
         this.fractal.offset.y -= e.movementY/(this.fractal.scale * this.fractal.dimension.y);
-        return;
       }
-      if(this.fractal.pause) return;
-      this.fractal.mousePosition.x = e.pageX - this.element.offsetLeft;
-      this.fractal.mousePosition.y = e.pageY - this.element.offsetTop;
       this.fractal.updateUniforms();
+    }).bind({fractal: this, element: this.container});
 
-      if (!this.fractal.pause && mouseDown) {
-        this.fractal.updateFocusPoint(this.fractal.mousePosition);
-      }
+    this.container.onmouseup = (function(e) {
+      mouseDown = false;
+      doubleClick = false;
+
+      if(this.fractal.urlParamManager)
+        this.fractal.urlParamManager.updateUrlParams();
+
     }).bind({fractal: this, element: this.container});
 
     window.onwheel = (function(e) {
@@ -177,7 +163,7 @@ function MyFractalPixi() {
     return this;
   }
 
-  this.setupTouchInteraction = function(juliaElementId, burningShipElementId) {
+  this.setupTouchInteraction = function(juliaIds, burningShipIds, focusPointLockIds) {
     this.touchManager = new TouchManager();
     this.container.ontouchstart = (function(e) {
       e.preventDefault();
@@ -202,12 +188,12 @@ function MyFractalPixi() {
     this.container.ontouchmove = (function(e) {
       e.preventDefault();
       if(e.touches.length == 1) {
+
         var touch = e.touches[0];
-        if (this.fractal.isJulia) {
-          // log("is julia");
-          this.fractal.updateFocusPoint({x: touch.pageX, y: touch.pageY})
-        }
-        else if (!doubleTouch){
+        this.fractal.updateFocusPoint({x: touch.pageX, y: touch.pageY})
+
+        if (!doubleTouch && !this.fractal.isJulia ||
+            this.fractal.focusPointLocked && this.fractal.isJulia && !doubleTouch) {
           // log("isn't julia and no double touch");
           this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale;
           this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale;
@@ -225,7 +211,6 @@ function MyFractalPixi() {
         this.fractal.scale *= scale;
         this.fractal.offset.x -= movement.x / this.fractal.dimension.x / this.fractal.scale;
         this.fractal.offset.y -= movement.y / this.fractal.dimension.y / this.fractal.scale;
-        this.fractal.canUpdateFocusPointOnTouch = false;
       }
     }).bind({fractal: this, element: this.container});
 
@@ -233,63 +218,70 @@ function MyFractalPixi() {
       touches--;
       if (touches < 1) {
         doubleTouch = false;
-        this.fractal.canUpdateFocusPointOnTouch = true;
       }
-
+      if (touches == 1) {
+        // this.fractal.touchManager.setFirstPosition(e.touches);
+      }
       // log("touch end!");
       if(this.fractal.urlParamManager)
         this.fractal.urlParamManager.updateUrlParams();
     }).bind({fractal: this, element: this.container});
 
-    var burningShipElement = document.getElementById(burningShipElementId);
-    burningShipElement.onctouch = (function() {
+    var burningShipButton = document.getElementById(burningShipIds + "-button");
+    burningShipButton.onctouch = (function() {
       this.toggleBurningShip();
-      this.updateBurningShipText(burningShipElement);
-      if(this.isJulia)
-      burningShipElement.innerHTML = "Turn OFF Burning Ship Fractal";
-      else
-      burningShipElement.innerHTML = "Turn ON Burning Ship Fractal";
+      this.updateBurningShipUi(burningShipIds);
     }).bind(this);
 
-    var juliaElement = document.getElementById(juliaElementId);
-    juliaElement.onctouch = (function() {
+    var juliaButton = document.getElementById(juliaIds + "-button");
+    juliaButton.onctouch = (function() {
       this.toggleJulia();
-      this.updateJuliaSetText(juliaElement);
+      this.updateJuliaSetUi(juliaIds);
+    }).bind(this);
+
+    var lockButton = document.getElementById(focusPointLockIds + "-button");
+    lockButton.onctouch = (function() {
+      this.toggleFocusPointLock();
+      this.updateFocusPointLockUi(focusPointLockIds);
     }).bind(this);
 
     return this;
   }
 
-  this.setupUi = function(juliaElementId, burningShipElementId) {
-    var juliaElement = document.getElementById(juliaElementId);
-    juliaElement.onclick = (function() {
+  this.setupUi = function(juliaIds, burningShipIds, focusPointLockIds) {
+    var juliaButton = document.getElementById(juliaIds + "-button");
+    juliaButton.onclick = (function() {
       this.toggleJulia();
-      this.updateJuliaSetText(juliaElement);
+      this.updateJuliaSetUi(juliaIds);
     }).bind(this);
-    juliaElement.ontouchstart = (function() {
+    juliaButton.ontouchstart = (function() {
       this.toggleJulia();
-      this.updateJuliaSetText(juliaElement);
+      this.updateJuliaSetUi(juliaIds);
     }).bind(this);
 
-    var burningShipElement = document.getElementById(burningShipElementId);
-    burningShipElement.onclick = (function() {
+    var burningShipButton = document.getElementById(burningShipIds + "-button");
+    burningShipButton.onclick = (function() {
       this.toggleBurningShip();
-      this.updateBurningShipText(burningShipElement);
+      this.updateBurningShipUi(burningShipIds);
     }).bind(this);
-    burningShipElement.ontouchstart = (function() {
+    burningShipButton.ontouchstart = (function() {
       this.toggleBurningShip();
-      this.updateBurningShipText(burningShipElement);
+      this.updateBurningShipUi(burningShipIds);
     }).bind(this);
 
-    this.updateBurningShipText = function(element) {
-      if(this.burningShip)
-        element.innerHTML = "Turn OFF Burning Ship Fractal";
-      else
-        element.innerHTML = "Turn ON Burning Ship Fractal";
-    }
+    var focusPointLockButton = document.getElementById(focusPointLockIds + "-button");
+    focusPointLockButton.onclick = (function() {
+      this.toggleFocusPointLock();
+      this.updateFocusPointLockUi(focusPointLockIds);
+    }).bind(this);
+    focusPointLockButton.ontouchstart = (function() {
+      this.toggleFocusPointLock();
+      this.updateFocusPointLockUi(focusPointLockIds);
+    }).bind(this);
 
-    this.updateBurningShipText(burningShipElement);
-    this.updateJuliaSetText(juliaElement);
+    this.updateBurningShipUi(burningShipIds);
+    this.updateJuliaSetUi(juliaIds);
+    this.updateFocusPointLockUi(focusPointLockIds);
 
     return this;
   }
@@ -302,11 +294,7 @@ function MyFractalPixi() {
 
   this.lastRender = 0;
   this.animate = (function (timestamp) {
-    // console.log("------");
-    // console.log(timestamp);
-    // console.log(this.lastRender);
     this.time += (timestamp - this.lastRender)/100;
-    // console.log(this.time);
     this.updateUniforms();
     // start the timer for the next animation loop
     requestAnimationFrame(this.animate);
@@ -325,10 +313,46 @@ function MyFractalPixi() {
     this.renderer.render(this.stage);
   }
 
-  this.togglePause = function() {
-    this.pause = !this.pause;
-    this.updateUniforms();
-  };
+  this.updateJuliaSetUi = function(idPrefix) {
+    var element = document.getElementById(idPrefix + "-text");
+    var icon = document.getElementById(idPrefix + "-icon");
+    if(this.isJulia) {
+      element.innerHTML = "Julia Fractal is ON";
+      icon.classList.remove("off");
+    }
+    else {
+      element.innerHTML = "Julia Fractal is OFF";
+      icon.classList.add("off");
+    }
+  }
+
+  this.updateBurningShipUi = function(idPrefix) {
+    var element = document.getElementById(idPrefix + "-text");
+    var icon = document.getElementById(idPrefix + "-icon");
+    if(this.burningShip) {
+      element.innerHTML = "Burning Ship Fractal is OFF";
+      icon.classList.remove("off");
+    }
+    else {
+      element.innerHTML = "Burning Ship Fractal is ON";
+      icon.classList.add("off");
+    }
+  }
+
+  this.updateFocusPointLockUi = function(idPrefix) {
+    var element = document.getElementById(idPrefix + "-text");
+    var icon = document.getElementById(idPrefix + "-icon");
+    if(this.focusPointLocked) {
+      element.innerHTML = "UNLOCK fractal interaction";
+      icon.innerHTML = "lock";
+      icon.classList.add("off");
+    }
+    else {
+      element.innerHTML = "LOCK fractal interaction";
+      icon.innerHTML = "lock_open";
+      icon.classList.remove("off");
+    }
+  }
 
   this.toggleOscillate = function() {
     this.oscillate = !this.oscillate;
@@ -340,18 +364,13 @@ function MyFractalPixi() {
     this.updateUniforms();
   };
 
-  this.updateJuliaSetText = function(element) {
-    if(this.isJulia) {
-      element.innerHTML = "Turn OFF Julia Fractal";
-    }
-    else {
-      element.innerHTML = "Turn ON Julia Fractal";
-    }
-  }
-
   this.toggleBurningShip = function() {
     this.burningShip = !this.burningShip;
     this.updateUniforms();
+  };
+
+  this.toggleFocusPointLock = function() {
+    this.focusPointLocked = !this.focusPointLocked;
   };
 
   this.incrementOffsetX = function(v = this.standardOffset) {

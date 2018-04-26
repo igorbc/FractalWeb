@@ -65,19 +65,28 @@ main {
   flex: 5;
 }
 
-#julia-button {
-  flex: 1;
+.menu-item-icon {
+  color: #fff;
+}
+
+.menu-item-icon.off {
+  color: #666;
+}
+
+.menu-item-text {
   padding-left: 0.5em;
 }
 
-#burning-ship-button {
-  flex: 1;
-  padding-left: 0.5em;
+#julia-button-text {
 }
 
-#save-png-button {
-  flex: 1;
-  padding-left: 0.5em;
+#julia-button-text {
+}
+
+#burning-ship-button-text {
+}
+
+#save-png-button-text {
 }
 
 #menu-button {
