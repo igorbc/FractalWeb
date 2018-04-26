@@ -1,6 +1,8 @@
 <html>
-  <link rel="stylesheet" href="stylesheets/index.css" />
+  <link rel="stylesheet" href="stylesheets/index.css"/>
+  <link rel="stylesheet" href="stylesheets/fractalFont.css"/>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/pixi.js/3.0.7/pixi.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <script type="text/javascript" src="js/main.js"></script>
   <script type="text/javascript" src="js/log.js"></script>
   <script type="text/javascript" src="js/touchManager.js"></script>
@@ -44,9 +46,20 @@
       </header>
       <main class="flex-box" id="fractal-container">
         <div id="side-menu">
-          <div class="align-items menu-item" id="julia-button">Julia</div>
-          <div class="align-items menu-item" id="burning-ship-button">Burning Ship</div>
-          <div class="align-items menu-item" id="save-png-button">Save Image</div>
+          <div class="align-items menu-item">
+            <span class="icon-julia"></span>
+            <span id="julia-button"></span>
+          </div>
+          <div class="align-items menu-item">
+            <span class="icon-burning-ship"></span>
+            <span id="burning-ship-button"></span>
+          </div>
+          <div class="align-items menu-item">
+            <i class="material-icons">file_download</i>
+            <span id="save-png-button">
+              Save Image
+            </span>
+          </div>
         </div>
       </main>
       <div id="download-container"></div>
