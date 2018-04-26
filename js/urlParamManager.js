@@ -81,7 +81,7 @@ function URLParamManager() {
     if(newValue) {
       var intArray = newValue.split(",");
       if(intArray.length > 0) {
-        for(var i = 0; i < Math.max(intArray.length, originalValue.length); i++) {
+        for(var i = 0; i < Math.min(intArray.length, originalValue.length); i++) {
           newValues[i] = this.parseAndGetInt(originalValue[i], intArray[i]);
         }
       }
