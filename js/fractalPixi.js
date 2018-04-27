@@ -63,8 +63,8 @@ function MyFractalPixi() {
   this.initialize = function(containderId, canvasId, useScreenSize = false) {
     this.container = document.getElementById(containderId);
     if(useScreenSize) {
-      this.dimension.x = screen.width;
-      this.dimension.y = screen.height;
+      this.dimension.x = screen.width * 3;
+      this.dimension.y = screen.height * 3;
     }
     else {
       this.dimension.x = this.container.clientWidth;
