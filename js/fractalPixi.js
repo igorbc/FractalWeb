@@ -8,6 +8,7 @@ function MyFractalPixi() {
   this.dimension = { x: 0, y: 0 };
   this.focusPoint = { x: -0.913, y: 0.27 };
   this.focusPointLocked = true;
+  this.showFocusPoint = false;
   this.iterations = 150;
   this.uniforms = {};
   this.standardOffset = 0.008;
@@ -99,6 +100,7 @@ function MyFractalPixi() {
       [
         { name: "time", uniform: {type:"f", value: 0 }},
         { name: "isJulia", uniform: {type:"b", value: this.isJulia }},
+        { name: "showFocusPoint", uniform: {type:"b", value: this.showFocusPoint }},
         { name: "burningShip", uniform: {type:"b", value: this.burningShip }},
         { name: "oscillate", uniform: {type:"b", value: this.oscillate }},
         { name: "iterations", uniform: {type:"i", value: this.iterations }},
@@ -190,7 +192,8 @@ function MyFractalPixi() {
       if(e.touches.length == 1) {
 
         var touch = e.touches[0];
-        this.fractal.updateFocusPoint({x: touch.pageX, y: touch.pageY})
+        console.log(this.fractal.container.style);
+        this.fractal.updateFocusPoint({x: touch.clientX, y: touch.clientY - screen.height * .10})
 
         if (!doubleTouch && !this.fractal.isJulia ||
             this.fractal.focusPointLocked && this.fractal.isJulia && !doubleTouch) {
@@ -371,6 +374,7 @@ function MyFractalPixi() {
 
   this.toggleFocusPointLock = function() {
     this.focusPointLocked = !this.focusPointLocked;
+    this.showFocusPoint = !this.showFocusPoint;
   };
 
   this.incrementOffsetX = function(v = this.standardOffset) {

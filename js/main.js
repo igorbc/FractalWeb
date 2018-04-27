@@ -35,6 +35,7 @@ function startFractalPixi() {
       .initialize("download-container", "new-fractal-pixi", true)
       .setupUrlParamManager()
       .setupMouseInteraction();
+
     newFractal.urlParamManager.loadUrlParams();
     newFractal.updateUniforms();
     newFractal.render();

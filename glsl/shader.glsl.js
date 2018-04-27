@@ -5,6 +5,7 @@ MyShaders = {
     precision highp int;
 
     uniform bool isJulia;
+    uniform bool showFocusPoint;
     uniform bool burningShip;
     uniform bool oscillate;
     uniform float time; //Declare that we're using this uniform
@@ -77,8 +78,13 @@ MyShaders = {
       const float BAILOUT = 8.0;
       vec2 z;
       vec2 c;
+
+
+
       vec2 adjustedPos = vec2(((gl_FragCoord.x - dimension.x/2.0) / max(dimension.y, dimension.x)),
                              -((gl_FragCoord.y - dimension.y/2.0) / max(dimension.y, dimension.x)));
+
+
       if (isJulia) {
         c = focusPoint;
 
@@ -116,6 +122,19 @@ MyShaders = {
       iterationLimit = getIterationLimit(iterations, time);
       if(count >= iterationLimit){
         gl_FragColor = vec4(bailoutColor, 1.0);
+      }
+      float dinstanceFromFocusPoint = distance(focusPoint,
+        vec2(
+          adjustedPos.x / scale + offset.x,
+          adjustedPos.y / scale + offset.y)
+        );
+      if(showFocusPoint && dinstanceFromFocusPoint < 0.01 / scale) {
+        gl_FragColor = vec4(
+          1.0-dinstanceFromFocusPoint/(0.01/scale),
+          1.0-dinstanceFromFocusPoint/(0.01/scale),
+          1.0-dinstanceFromFocusPoint/(0.01/scale),
+          dinstanceFromFocusPoint/(0.01/scale)) -  gl_FragColor;
+      //return;
       }
     }
   `
