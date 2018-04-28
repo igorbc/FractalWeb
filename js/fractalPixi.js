@@ -1,9 +1,26 @@
 var mouseDown = false;
 var touches = 0;
 var doubleTouch = false;
+var colorPresets = {
+  BLACK_WHITE: {
+    colors: [
+      { x: 1, y: 1, z: 1 },
+      { x: 0.5, y: 0.5, z: 0.5 },
+      { x: 0, y: 0, z: 0 },
+    ],
+    stops: [
+      0.01,
+      0.2,
+      1
+    ],
+    bailoutColor: { x: 0, y: 0, z: 0 }
+  }
+}
+
+
 
 function MyFractalPixi() {
-  this.offset = {x: -1, y: 0 };
+  this.offset = { x: 0, y: 0 };
   this.scale = 0.2;
   this.dimension = { x: 0, y: 0 };
   this.focusPoint = { x: -0.913, y: 0.27 };
@@ -34,10 +51,23 @@ function MyFractalPixi() {
     1.0
   ];
 
+  this.applyPreset = function(preset) {
+    var p = colorPresets[preset];
+    this.colors = p.colors;
+    this.stops = p.stops;
+    this.bailoutColor = p.bailoutColor;
+    this.updateUniforms();
+    return this;
+  }
+
   this.updateFocusPoint = function(position) {
     if(!this.focusPointLocked) {
       this.focusPoint.x = (position.x - this.dimension.x/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale + this.offset.x;
       this.focusPoint.y = (position.y - this.dimension.y/2.0) / Math.max(this.dimension.y, this.dimension.x) / this.scale + this.offset.y;
+    }
+
+    if(this.altFractal) {
+      this.focusPointUpdateCallback();
     }
   }
 
@@ -56,6 +86,50 @@ function MyFractalPixi() {
       { varName: "colors", paramName: "colors", type: "avec3" }
     ])
     this.urlParamManager.loadUrlParams();
+
+    return this;
+  }
+
+  this.setUpdateCallback = function(fractal) {
+    this.altFractal = fractal;
+    this.focusPointUpdateCallback = function(){
+      this.altFractal.focusPoint = this.focusPoint;
+    }
+
+    this.changeTypeCallback = function() {
+      if(this.isJulia && this.burningShip) {
+        this.altFractal.isJulia = false;
+        this.altFractal.burningShip = true;
+        this.altFractal.offset.x = -0.5;
+        this.altFractal.offset.y = -0.5;
+      }
+      else if(this.isJulia && !this.burningShip) {
+        this.altFractal.isJulia = false;
+        this.altFractal.burningShip = false
+        this.altFractal.offset.x = -0.5;
+        this.altFractal.offset.y = 0;
+      }
+      else if(!this.isJulia && this.burningShip) {
+        this.altFractal.isJulia = true;
+        this.altFractal.burningShip = true;
+        this.altFractal.offset.x = 0;
+        this.altFractal.offset.y = 0;
+      }
+      else if(!this.isJulia && !this.burningShip) {
+        this.altFractal.isJulia = true;
+        this.altFractal.burningShip = false;
+        this.altFractal.offset.x = 0;
+        this.altFractal.offset.y = 0;
+      }
+    }
+
+    this.focusPointLockedCallback = function() {
+      this.altFractal.setVisibility(!this.focusPointLocked);
+    }
+
+    this.focusPointUpdateCallback();
+    this.changeTypeCallback();
+    this.focusPointLockedCallback();
 
     return this;
   }
@@ -130,6 +204,13 @@ function MyFractalPixi() {
     return this;
   }
 
+  this.setVisibility = function(value) {
+    if(value)
+      this.container.classList.remove("hidden");
+    else
+      this.container.classList.add("hidden");
+  }
+
   this.setupMouseInteraction = function() {
     this.container.onmousedown = function(e) { mouseDown = true; }
 
@@ -192,11 +273,12 @@ function MyFractalPixi() {
       if(e.touches.length == 1) {
 
         var touch = e.touches[0];
-        console.log(this.fractal.container.style);
-        this.fractal.updateFocusPoint({x: touch.clientX, y: touch.clientY - screen.height * .10})
-
-        if (!doubleTouch && !this.fractal.isJulia ||
-            this.fractal.focusPointLocked && this.fractal.isJulia && !doubleTouch) {
+        if(!this.fractal.focusPointLocked) {
+          // TODO: remove dependency with view (the 10% height adjustment)
+          this.fractal.updateFocusPoint({x: touch.clientX, y: touch.clientY - screen.height * .10})
+        }
+        if ((!doubleTouch && !this.fractal.isJulia && this.fractal.focusPointLocked) ||
+          (this.fractal.focusPointLocked && this.fractal.isJulia && !doubleTouch)) {
           // log("isn't julia and no double touch");
           this.fractal.offset.x += ((this.fractal.previousTouch.x - touch.pageX) / this.fractal.dimension.x)/this.fractal.scale;
           this.fractal.offset.y += ((this.fractal.previousTouch.y - touch.pageY) / this.fractal.dimension.y)/this.fractal.scale;
@@ -365,16 +447,25 @@ function MyFractalPixi() {
   this.toggleJulia = function() {
     this.isJulia = !this.isJulia;
     this.updateUniforms();
+    if(this.altFractal) {
+      this.changeTypeCallback();
+    }
   };
 
   this.toggleBurningShip = function() {
     this.burningShip = !this.burningShip;
     this.updateUniforms();
+    if(this.altFractal) {
+      this.changeTypeCallback();
+    }
   };
 
   this.toggleFocusPointLock = function() {
     this.focusPointLocked = !this.focusPointLocked;
     this.showFocusPoint = !this.showFocusPoint;
+    if(this.altFractal) {
+      this.focusPointLockedCallback();
+    }
   };
 
   this.incrementOffsetX = function(v = this.standardOffset) {

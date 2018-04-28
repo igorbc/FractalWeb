@@ -1,15 +1,25 @@
 function startFractalPixi() {
   window.myFractal = new MyFractalPixi();
 
+  window.altFractal = new MyFractalPixi();
+  altFractal
+    .initialize("alt-view-container", "alt-fractal-pixi")
+    .applyPreset("BLACK_WHITE")
+    .startAnimation();
+  altFractal.isJulia = true;
+  altFractal.showFocusPoint = true;
+
   myFractal
     .initialize("fractal-container", "fractal-pixi")
     .setupUrlParamManager()
     .setupMouseInteraction()
     .setupTouchInteraction("julia", "burning-ship", "focus-point-lock")
     .setupUi("julia", "burning-ship", "focus-point-lock")
+    .setUpdateCallback(altFractal)
     .startAnimation();
 
   setupKeyHandlerPixi();
+
 
   var menuButton = document.getElementById("menu-button");
   menuButton.onclick = function() {

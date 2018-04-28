@@ -9,6 +9,12 @@ html {
   /* font-size: ; */
 }
 
+.hidden {
+  opacity: 0;
+  /* display: none; */
+  transition: 0.25s;
+}
+
 .wrapper {
   display: flex;
   flex-flow: row wrap;
@@ -126,6 +132,15 @@ main {
   transform: translateX(0);
   transition: 0.25s;
   /* z-index: 200; */
+}
+
+#alt-view-container {
+  position: fixed;
+  bottom: 0px;
+  height: 30%;
+  width: 40%;
+  right: 30%;
+  transition: 0.5s;
 }
 
 .menu-item {

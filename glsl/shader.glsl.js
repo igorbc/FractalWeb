@@ -79,11 +79,8 @@ MyShaders = {
       vec2 z;
       vec2 c;
 
-
-
       vec2 adjustedPos = vec2(((gl_FragCoord.x - dimension.x/2.0) / max(dimension.y, dimension.x)),
                              -((gl_FragCoord.y - dimension.y/2.0) / max(dimension.y, dimension.x)));
-
 
       if (isJulia) {
         c = focusPoint;
@@ -129,12 +126,7 @@ MyShaders = {
           adjustedPos.y / scale + offset.y)
         );
       if(showFocusPoint && dinstanceFromFocusPoint < 0.01 / scale) {
-        gl_FragColor = vec4(
-          1.0-dinstanceFromFocusPoint/(0.01/scale),
-          1.0-dinstanceFromFocusPoint/(0.01/scale),
-          1.0-dinstanceFromFocusPoint/(0.01/scale),
-          dinstanceFromFocusPoint/(0.01/scale)) -  gl_FragColor;
-      //return;
+        gl_FragColor = vec4(1.0) - gl_FragColor;
       }
     }
   `
