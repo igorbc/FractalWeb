@@ -17,8 +17,6 @@ var colorPresets = {
   }
 }
 
-
-
 function MyFractalPixi() {
   this.offset = { x: 0, y: 0 };
   this.scale = 0.2;
@@ -246,7 +244,7 @@ function MyFractalPixi() {
     return this;
   }
 
-  this.setupTouchInteraction = function(juliaIds, burningShipIds, focusPointLockIds) {
+  this.setupTouchInteraction = function(juliaIds, burningShipIds, focusPointLockIds, oscillateIds) {
     this.touchManager = new TouchManager();
     this.container.ontouchstart = (function(e) {
       e.preventDefault();
@@ -330,10 +328,16 @@ function MyFractalPixi() {
       this.updateFocusPointLockUi(focusPointLockIds);
     }).bind(this);
 
+    var oscillateButton = document.getElementById(oscillateIds + "-button");
+    lockButton.onctouch = (function() {
+      this.toggleOscillate();
+      this.updateOscillateUi(oscillateIds);
+    }).bind(this);
+
     return this;
   }
 
-  this.setupUi = function(juliaIds, burningShipIds, focusPointLockIds) {
+  this.setupUi = function(juliaIds, burningShipIds, focusPointLockIds, oscillateIds) {
     var juliaButton = document.getElementById(juliaIds + "-button");
     juliaButton.onclick = (function() {
       this.toggleJulia();
@@ -364,9 +368,20 @@ function MyFractalPixi() {
       this.updateFocusPointLockUi(focusPointLockIds);
     }).bind(this);
 
+    var oscillateButton = document.getElementById(oscillateIds + "-button");
+    oscillateButton.onclick = (function() {
+      this.toggleOscillate();
+      this.updateOscillateUi(oscillateIds);
+    }).bind(this);
+    oscillateButton.ontouchstart = (function() {
+      this.toggleOscillate();
+      this.updateOscillateUi(oscillateIds);
+    }).bind(this);
+
     this.updateBurningShipUi(burningShipIds);
     this.updateJuliaSetUi(juliaIds);
     this.updateFocusPointLockUi(focusPointLockIds);
+    this.updateOscillateUi(oscillateIds);
 
     return this;
   }
@@ -435,6 +450,21 @@ function MyFractalPixi() {
     else {
       element.innerHTML = "LOCK fractal interaction";
       icon.innerHTML = "lock_open";
+      icon.classList.add("off");
+    }
+  }
+
+  this.updateOscillateUi = function(idPrefix) {
+    var element = document.getElementById(idPrefix + "-text");
+    var icon = document.getElementById(idPrefix + "-icon");
+    if(this.oscillate) {
+      element.innerHTML = "Stop oscillation";
+      icon.innerHTML = "all_inclusive";
+      icon.classList.remove("off");
+    }
+    else {
+      element.innerHTML = "Start oscillation";
+      icon.innerHTML = "all_inclusive";
       icon.classList.add("off");
     }
   }

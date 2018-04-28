@@ -13,8 +13,8 @@ function startFractalPixi() {
     .initialize("fractal-container", "fractal-pixi")
     .setupUrlParamManager()
     .setupMouseInteraction()
-    .setupTouchInteraction("julia", "burning-ship", "focus-point-lock")
-    .setupUi("julia", "burning-ship", "focus-point-lock")
+    .setupTouchInteraction("julia", "burning-ship", "focus-point-lock", "oscillate")
+    .setupUi("julia", "burning-ship", "focus-point-lock", "oscillate")
     .setUpdateCallback(altFractal)
     .startAnimation();
 
