@@ -15,7 +15,7 @@ var colorPresets = {
     ],
     bailoutColor: { x: 0, y: 0, z: 0 }
   }
-}
+};
 
 function MyFractalPixi() {
   this.offset = { x: 0, y: 0 };
@@ -90,6 +90,12 @@ function MyFractalPixi() {
 
   this.setUpdateCallback = function(fractal) {
     this.altFractal = fractal;
+    if(this.altFractal) {
+      this.altFractal.container.onclick = function() {
+        console.log("tocou no troço");
+      }
+    }
+
     this.focusPointUpdateCallback = function(){
       this.altFractal.focusPoint = this.focusPoint;
     }

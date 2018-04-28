@@ -5,7 +5,9 @@ function downloadCanvasAsPng(canvas, fileName) {
 		document.body.append(a);
 		a.download = fileName;
 		a.href = URL.createObjectURL(b);
+		
 		a.click();
+
 		a.remove();
 	}, 'image/png');
 }
