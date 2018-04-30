@@ -58,6 +58,7 @@ header {
 
   color: rgb(180, 180, 180);
   background-color: rgb(20, 20, 20);
+  z-index:1;
   /* border: solid red 10px; */
 }
 
@@ -132,6 +133,12 @@ main {
   transform: translateX(0);
   transition: 0.25s;
   /* z-index: 200; */
+}
+
+.simple-shadow {
+  -webkit-box-shadow: 0 0 7px 0px #000;
+     -moz-box-shadow: 0 0 7px 0px #000;
+          box-shadow: 0 0 7px 0px #000;
 }
 
 #alt-view-container {
