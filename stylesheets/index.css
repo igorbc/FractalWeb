@@ -72,6 +72,10 @@ main {
   flex: 5;
 }
 
+#fractal-pixi {
+  /* z-index: -10; */
+}
+
 .menu-item-icon {
   color: #fff;
 }
@@ -136,9 +140,9 @@ main {
 }
 
 .simple-shadow {
-  -webkit-box-shadow: 0 0 7px 0px #000;
-     -moz-box-shadow: 0 0 7px 0px #000;
-          box-shadow: 0 0 7px 0px #000;
+  -webkit-box-shadow: 0 0 4px 0px #000;
+     -moz-box-shadow: 0 0 4px 0px #000;
+          box-shadow: 0 0 4px 0px #000;
 }
 
 #alt-view-container {

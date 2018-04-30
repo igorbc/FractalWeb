@@ -35,10 +35,10 @@ function MyFractalPixi() {
   this.damping = 4;
   this.bailoutColor = { x: 1.0, y: 1.0, z: 1.0 };
   this.colors = [
-    { x: 0.0, y: 0.15, z: 0.1 },
-    { x: 0.5, y: 0.1, z: 0.0 },
-    { x: 1.0, y: 0.3, z: 0.0 },
-    { x: 1.0, y: 1.0, z: 0.0 },
+    { x: 0.0, y: 0.25, z: 0.15 },
+    { x: 0.5, y: 0.0, z: 0.0 },
+    { x: 1.0, y: 0.0, z: 0.0 },
+    { x: 1.0, y: 1.0, z: 0.15 },
     { x: 1.0, y: 1.0, z: 0.1 }
   ];
   this.stops = [
@@ -477,6 +477,7 @@ function MyFractalPixi() {
 
   this.toggleOscillate = function() {
     this.oscillate = !this.oscillate;
+    this.time = 9;
     this.updateUniforms();
   };
 
