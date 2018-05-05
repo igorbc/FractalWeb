@@ -107,8 +107,8 @@ MyShaders = {
         vec2 z2 = z * z;
 
         if (z2.x + z2.y > BAILOUT) {
-          softIteration = float(i) - log2(log2(dot(z,z))) + 4.0;
-          gl_FragColor = getColor(softIteration, float(iterationLimit) );
+          softIteration = log2(log2(dot(z,z))) + 4.0;
+          gl_FragColor = getColor(float(i) - softIteration, float(iterationLimit) - softIteration);
           break;
         }
 
