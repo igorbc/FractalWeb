@@ -96,6 +96,7 @@ MyShaders = {
 
       int iterationLimit;
       int count;
+      float softIteration;
       for(int i = 0; i < 1000; i++){
         count = i;
         iterationLimit = getIterationLimit(iterations, time);
@@ -106,7 +107,8 @@ MyShaders = {
         vec2 z2 = z * z;
 
         if (z2.x + z2.y > BAILOUT) {
-          gl_FragColor = getColor(float(i), float(iterationLimit));
+          softIteration = float(i) - log2(log2(dot(z,z))) + 4.0;
+          gl_FragColor = getColor(softIteration, float(iterationLimit) );
           break;
         }
 
