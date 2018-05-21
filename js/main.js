@@ -1,4 +1,11 @@
+
 function startFractalPixi() {
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('service-worker.js')
+      .then(function() { log('Service worker registered.'); console.log('Service worker registered.'); });
+  }
+
   window.myFractal = new MyFractalPixi();
 
   window.altFractal = new MyFractalPixi();
