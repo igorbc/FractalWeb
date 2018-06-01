@@ -11,7 +11,7 @@ function URLParamManager() {
     var url = new URL(urlString);
     var params = url.searchParams;
 
-    for(var i = 0; i < this.paramsInfo.length; i++) {
+    for(let i = 0; i < this.paramsInfo.length; i++) {
       this.object[this.paramsInfo[i].varName] =
         this.parseFunctions[this.paramsInfo[i].type](
           this.object[this.paramsInfo[i].varName],
@@ -19,7 +19,7 @@ function URLParamManager() {
         );
     }
 
-    for(var i = 0; i < this.object.colors.length; i++) {
+    for(let i = 0; i < this.object.colors.length; i++) {
       // this.object.colors[i] = this.parseAndGetVec3(this.object.colors[i], params.get("color"+i));
       this.object.stops[i] = this.parseAndGetFloat(this.object.stops[i], params.get("stop"+i));
     }

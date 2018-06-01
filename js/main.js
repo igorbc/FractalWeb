@@ -13,8 +13,8 @@ function startFractalPixi() {
     .initialize("alt-view-container", "alt-fractal-pixi-canvas")
     .applyPreset("BLACK_WHITE")
     .startAnimation();
-  altFractal.isJulia = true;
-  altFractal.showFocusPoint = true;
+  altFractal.setJulia(true);
+  altFractal.setShowFocusPoint(true);
 
   myFractal
     .initialize("fractal-container", "fractal-pixi-canvas")
@@ -53,8 +53,6 @@ function startFractalPixi() {
       .setupUrlParamManager()
       .setupMouseInteraction();
 
-    newFractal.urlParamManager.loadUrlParams();
-    newFractal.updateUniforms();
     newFractal.render();
   }
 }
