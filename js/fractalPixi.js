@@ -17,7 +17,7 @@ var colorPresets = {
   }
 };
 
-function MyFractalPixi() {
+function FractalPixi() {
   this.offset = { x: 0, y: 0 };
   this.scale = 0.2;
   this.dimension = { x: 0, y: 0 };
@@ -48,6 +48,78 @@ function MyFractalPixi() {
     0.5,
     1.0
   ];
+
+  this.initialize = function(containderId, canvasId, useScreenSize = false) {
+    if(typeof(containderId) !== "string" || typeof(canvasId) !== "string")
+      throw new Error("container id and canvas id must be provided");
+    this.container = document.getElementById(containderId);
+    if(useScreenSize) {
+      this.dimension.x = screen.width * 3;
+      this.dimension.y = screen.height * 3;
+    }
+    else {
+      this.dimension.x = this.container.clientWidth;
+      this.dimension.y = this.container.clientHeight;
+    }
+
+    // Chooses either WebGL if supported or falls back to Canvas rendering
+    this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y, { preserveDrawingBuffer:true });
+    // Add the render view object into the page
+    this.renderer.view.setAttribute('id', canvasId);
+
+    this.container.appendChild(this.renderer.view);
+
+    // The stage is the root container that will hold everything in our scene
+    this.stage = new PIXI.Container();
+
+    // Load an image and create an object
+    this.image = new PIXI.Sprite();
+    this.image.width = this.dimension.x;
+    this.image.height = this.dimension.y;
+    // Set it at the center of the screen
+    this.image.x = this.dimension.x / 2;
+    this.image.y = this.dimension.y / 2;
+    // Make sure the center point of the image is at its center, instead of the default top left
+    this.image.anchor.set(0.5);
+    // Add it to the screen
+    this.stage.addChild(this.image);
+
+    this.time = 0;
+    this.numColors = this.colors.length;
+    this.uniformsManager = new GlslUniforms();
+    this.uniformsManager.initialize(
+      [
+        { name: "time", uniform: {type:"f", value: 0 }},
+        { name: "isJulia", uniform: {type:"b", value: this.isJulia }},
+        { name: "showFocusPoint", uniform: {type:"b", value: this.showFocusPoint }},
+        { name: "burningShip", uniform: {type:"b", value: this.burningShip }},
+        { name: "oscillate", uniform: {type:"b", value: this.oscillate }},
+        { name: "iterations", uniform: {type:"i", value: this.iterations }},
+        { name: "dimension", uniform: {type:"v2", value: this.dimension }},
+        { name: "scale", uniform: {type:"f", value: this.scale }},
+        { name: "offset", uniform: {type:"v2", value: this.offset }},
+        { name: "mousePosition", uniform: {type:"v2", value: this.mousePosition }},
+        { name: "focusPoint", uniform: {type:"v2", value: this.focusPoint }},
+        { name: "bailoutColor", uniform: {type:"v3", value: this.bailoutColor }},
+        { name: "numColors", uniform: {type:"i", value: this.numColors }},
+        { name: "colors", uniform: {type:"v3v", value: this.colors }},
+        { name: "stops", uniform: {type:"fv1", value: this.stops }}
+      ]
+    );
+    this.uniforms = this
+      .uniformsManager
+      .getUniforms();
+
+    this.updateUniforms();
+    //Get shader code as a string
+    var shaderCode = MyShaders.fractalShader;
+    //Create our Pixi filter using our custom shader code
+    var simpleShader = new PIXI.AbstractFilter('', shaderCode, this.uniforms);
+    //Apply it to our object
+    this.image.filters = [simpleShader];
+
+    return this;
+  }
 
   this.applyPreset = function(preset) {
     var p = colorPresets[preset];
@@ -134,76 +206,6 @@ function MyFractalPixi() {
     this.focusPointUpdateCallback();
     this.changeTypeCallback();
     this.focusPointLockedCallback();
-
-    return this;
-  }
-
-  this.initialize = function(containderId, canvasId, useScreenSize = false) {
-    this.container = document.getElementById(containderId);
-    if(useScreenSize) {
-      this.dimension.x = screen.width * 3;
-      this.dimension.y = screen.height * 3;
-    }
-    else {
-      this.dimension.x = this.container.clientWidth;
-      this.dimension.y = this.container.clientHeight;
-    }
-
-    // Chooses either WebGL if supported or falls back to Canvas rendering
-    this.renderer = new PIXI.autoDetectRenderer(this.dimension.x, this.dimension.y, { preserveDrawingBuffer:true });
-    // Add the render view object into the page
-    this.renderer.view.setAttribute('id', canvasId);
-
-    this.container.appendChild(this.renderer.view);
-
-    // The stage is the root container that will hold everything in our scene
-    this.stage = new PIXI.Container();
-
-    // Load an image and create an object
-    this.image = new PIXI.Sprite();
-    this.image.width = this.dimension.x;
-    this.image.height = this.dimension.y;
-    // Set it at the center of the screen
-    this.image.x = this.dimension.x / 2;
-    this.image.y = this.dimension.y / 2;
-    // Make sure the center point of the image is at its center, instead of the default top left
-    this.image.anchor.set(0.5);
-    // Add it to the screen
-    this.stage.addChild(this.image);
-
-    this.time = 0;
-    this.numColors = this.colors.length;
-    this.uniformsManager = new GlslUniforms();
-    this.uniformsManager.initialize(
-      [
-        { name: "time", uniform: {type:"f", value: 0 }},
-        { name: "isJulia", uniform: {type:"b", value: this.isJulia }},
-        { name: "showFocusPoint", uniform: {type:"b", value: this.showFocusPoint }},
-        { name: "burningShip", uniform: {type:"b", value: this.burningShip }},
-        { name: "oscillate", uniform: {type:"b", value: this.oscillate }},
-        { name: "iterations", uniform: {type:"i", value: this.iterations }},
-        { name: "dimension", uniform: {type:"v2", value: this.dimension }},
-        { name: "scale", uniform: {type:"f", value: this.scale }},
-        { name: "offset", uniform: {type:"v2", value: this.offset }},
-        { name: "mousePosition", uniform: {type:"v2", value: this.mousePosition }},
-        { name: "focusPoint", uniform: {type:"v2", value: this.focusPoint }},
-        { name: "bailoutColor", uniform: {type:"v3", value: this.bailoutColor }},
-        { name: "numColors", uniform: {type:"i", value: this.numColors }},
-        { name: "colors", uniform: {type:"v3v", value: this.colors }},
-        { name: "stops", uniform: {type:"fv1", value: this.stops }}
-      ]
-    );
-    this.uniforms = this
-      .uniformsManager
-      .getUniforms();
-
-    this.updateUniforms();
-    //Get shader code as a string
-    var shaderCode = MyShaders.fractalShader;
-    //Create our Pixi filter using our custom shader code
-    var simpleShader = new PIXI.AbstractFilter('', shaderCode, this.uniforms);
-    //Apply it to our object
-    this.image.filters = [simpleShader];
 
     return this;
   }

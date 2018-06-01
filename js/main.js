@@ -6,18 +6,18 @@ function startFractalPixi() {
       .then(function() { log('Service worker registered.'); console.log('Service worker registered.'); });
   }
 
-  window.myFractal = new MyFractalPixi();
+  window.myFractal = new FractalPixi();
 
-  window.altFractal = new MyFractalPixi();
+  window.altFractal = new FractalPixi();
   altFractal
-    .initialize("alt-view-container", "alt-fractal-pixi")
+    .initialize("alt-view-container", "alt-fractal-pixi-canvas")
     .applyPreset("BLACK_WHITE")
     .startAnimation();
   altFractal.isJulia = true;
   altFractal.showFocusPoint = true;
 
   myFractal
-    .initialize("fractal-container", "fractal-pixi")
+    .initialize("fractal-container", "fractal-pixi-canvas")
     .setupUrlParamManager()
     .setupMouseInteraction()
     .setupTouchInteraction("julia", "burning-ship", "focus-point-lock", "oscillate")
@@ -36,20 +36,20 @@ function startFractalPixi() {
   var saveImageButton = document.getElementById("download-button");
   saveImageButton.onclick = function() {
     var newFractal = makeNewFractal();
-    downloadCanvasAsPng(document.getElementById("new-fractal-pixi"), "fractal.png");
-    document.getElementById("new-fractal-pixi").remove();
+    downloadCanvasAsPng(document.getElementById("new-fractal-pixi-canvas"), "fractal.png");
+    document.getElementById("new-fractal-pixi-canvas").remove();
   }
   saveImageButton.ontouchstart = function() {
     var newFractal = makeNewFractal();
-    downloadCanvasAsPng(document.getElementById("new-fractal-pixi"), "fractal.png");
-    document.getElementById("new-fractal-pixi").remove();
+    downloadCanvasAsPng(document.getElementById("new-fractal-pixi-canvas"), "fractal.png");
+    document.getElementById("new-fractal-pixi-canvas").remove();
   }
 
   function makeNewFractal() {
-    window.newFractal = new MyFractalPixi();
+    window.newFractal = new FractalPixi();
 
     newFractal
-      .initialize("download-container", "new-fractal-pixi", true)
+      .initialize("download-container", "new-fractal-pixi-canvas", true)
       .setupUrlParamManager()
       .setupMouseInteraction();
 

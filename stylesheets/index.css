@@ -1,3 +1,12 @@
+/* #debug-info {
+  position: fixed;
+  width: 50%;
+  height: 50%;
+  opacity: 0.5;
+  background-color: #8a8;
+  z-index: 50;
+} */
+
 body {
   border: 0;
   margin: 0;
@@ -72,7 +81,7 @@ main {
   flex: 5;
 }
 
-#fractal-pixi {
+#fractal-pixi-canvas {
   /* z-index: -10; */
 }
 
